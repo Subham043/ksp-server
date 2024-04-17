@@ -9,6 +9,7 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import { tokens } from "./token";
+import { criminals } from "./criminal";
 
 export const statusEnum = pgEnum("status", ["active", "blocked"]);
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -22,7 +23,7 @@ export const users = pgTable(
     password: varchar("password", { length: 256 }).notNull(),
     status: statusEnum("status").default("active"),
     role: roleEnum("role").default("user"),
-    key: uuid("uuid1").defaultRandom(),
+    key: uuid("key").defaultRandom(),
     createdAt: timestamp("createdAt").defaultNow(),
     updatedAt: timestamp("updatedAt").defaultNow(),
   },
@@ -35,4 +36,5 @@ export const users = pgTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   tokens: many(tokens),
+  criminalCreated: many(criminals),
 }));
