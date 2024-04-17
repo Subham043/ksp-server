@@ -5,7 +5,7 @@ import bcrypt from "fastify-bcrypt";
 import jwt from "@fastify/jwt";
 import cookie from "@fastify/cookie";
 import auth from "@fastify/auth";
-import multipart from "@fastify/multipart";
+import multipartFileUpload from "fastify-file-upload";
 import mailer from "fastify-mailer";
 import fastifyRequestLogger from "@mgcrea/fastify-request-logger";
 import { logger } from "./logger";
@@ -28,7 +28,8 @@ import {
 import { AuthType } from "../@types/user.type";
 import closeWithGrace from "close-with-grace";
 import { accountRoutes } from "../modules/account/account.routes";
-import { excelRoutes } from "../modules/excel/excel.routes";
+import { uploadRoutes } from "../modules/upload/upload.routes";
+import { criminalRoutes } from "../modules/criminal/criminal.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -83,17 +84,14 @@ export async function buildServer() {
 
   await server.register(helmet, helmetOptions);
 
-  await server.register(multipart, {
-    attachFieldsToBody: true,
-    limits: {
-      fieldNameSize: 100, // Max field name size in bytes
-      fieldSize: 100, // Max field value size in bytes
-      fields: 10, // Max number of non-file fields
-      fileSize: 1000000, // For multipart forms, the max file size in bytes
-      files: 1, // Max number of file fields
-      headerPairs: 2000, // Max number of header key=>value pairs
-      parts: 1000, // For multipart forms, the max number of parts (fields + files)
-    },
+  await server.register(multipartFileUpload, {
+    safeFileNames: true,
+    uriDecodeFileNames: true,
+    preserveExtension: false,
+    useTempFiles: true,
+    tempFileDir: "../../static/temp",
+    parseNested: true,
+    debug: false,
   });
 
   await server.register(bcrypt, {
@@ -102,8 +100,9 @@ export async function buildServer() {
 
   await server.register(authRoutes, { prefix: "/api/auth" });
   await server.register(userRoutes, { prefix: "/api/users" });
+  await server.register(criminalRoutes, { prefix: "/api/criminals" });
   await server.register(accountRoutes, { prefix: "/api/account" });
-  await server.register(excelRoutes, { prefix: "/api/excel" });
+  await server.register(uploadRoutes, { prefix: "/api/upload" });
 
   // delay is the number of milliseconds for the graceful close to finish
   const closeListeners = closeWithGrace(

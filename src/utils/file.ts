@@ -1,12 +1,12 @@
-import { MultipartFile } from "@fastify/multipart";
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
+import { MultipartFile } from "../@types/multipart_file.type";
+import path from "path";
 
 export const saveImage: (file: MultipartFile) => Promise<string> = async (
   file
 ) => {
-  const fileName = uuidv4() + "." + file.mimetype;
-  const buffer = await file.toBuffer();
-  fs.writeFileSync(`../../static/images/${fileName}`, buffer);
+  const extension = file.mimetype.split("/")[1];
+  const fileName = file.md5 + "." + extension;
+  const filePath = path.resolve(__dirname, `../../static/images/${fileName}`);
+  file.mv(filePath);
   return fileName;
 };

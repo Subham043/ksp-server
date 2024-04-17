@@ -1,4 +1,4 @@
-import { MultipartFile } from "@fastify/multipart";
+import { MultipartFile } from "./multipart_file.type";
 
 export type CriminalType = {
   id: number;

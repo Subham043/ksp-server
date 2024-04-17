@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
 import { getUuidParamSchema } from "../../common/schemas/uuid_param.schema";
-import { downloadFailedExcel } from "./excel.controller";
+import { downloadFailedExcel } from "./upload.controller";
 
-export async function excelRoutes(app: FastifyInstance) {
+export async function uploadRoutes(app: FastifyInstance) {
   app.get(
-    "/failed/:id",
+    "/failed-excel/:id",
     {
       schema: {
         params: getUuidParamSchema,

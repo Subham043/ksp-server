@@ -13,7 +13,7 @@ import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createCriminalBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
 
-export async function companyMasterRoutes(app: FastifyInstance) {
+export async function criminalRoutes(app: FastifyInstance) {
   app.get(
     "/",
     {

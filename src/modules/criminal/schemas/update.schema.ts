@@ -1,7 +1,6 @@
-import { Stream } from "stream";
 import { z } from "zod";
-import { MultipartFile } from "@fastify/multipart";
 import { getByAadhar, getById } from "../criminal.repository";
+import { MultipartFile } from "../../../@types/multipart_file.type";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
 const ACCEPTED_FILE_TYPES = [
@@ -131,44 +130,36 @@ export const updateCriminalBodySchema = z.object({
     .any()
     .refine((photo) => {
       if (photo) {
-        if (!photo.file) {
-          return false;
-        }
-        return photo.file instanceof Stream;
+        return ACCEPTED_FILE_TYPES.includes(photo.mimetype);
       }
       return true;
-    }, "Photo file is required")
+    }, "Invalid photo file type")
     .refine(
-      (photo) => photo && ACCEPTED_FILE_TYPES.includes(photo.mimetype),
-      "Invalid photo file type"
-    )
-    .refine(
-      (photo) => photo && photo.file.bytesRead <= MAX_UPLOAD_SIZE,
+      (photo) => (photo ? photo.size <= MAX_UPLOAD_SIZE : true),
       "File size must be less than 3MB"
     )
-    .transform((photo) => photo as MultipartFile),
+    .transform((photo) => {
+      if (photo) {
+        return photo as MultipartFile;
+      }
+      return undefined;
+    }),
   aadhar_photo: z
     .any()
     .refine((aadhar_photo) => {
       if (aadhar_photo) {
-        if (!aadhar_photo.file) {
-          return false;
-        }
-        return aadhar_photo.file instanceof Stream;
+        return ACCEPTED_FILE_TYPES.includes(aadhar_photo.mimetype);
       }
       return true;
-    }, "Photo file is required")
+    }, "Invalid photo file type")
     .refine(
       (aadhar_photo) =>
-        aadhar_photo && ACCEPTED_FILE_TYPES.includes(aadhar_photo.mimetype),
-      "Invalid photo file type"
-    )
-    .refine(
-      (aadhar_photo) =>
-        aadhar_photo && aadhar_photo.file.bytesRead <= MAX_UPLOAD_SIZE,
+        aadhar_photo ? aadhar_photo.size <= MAX_UPLOAD_SIZE : true,
       "File size must be less than 3MB"
     )
-    .transform((aadhar_photo) => aadhar_photo as MultipartFile),
+    .transform((aadhar_photo) =>
+      aadhar_photo ? (aadhar_photo as MultipartFile) : undefined
+    ),
 });
 
 export const updateCriminalUniqueSchema = z

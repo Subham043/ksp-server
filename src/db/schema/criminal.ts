@@ -10,7 +10,7 @@ import { users } from "./user";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { text } from "drizzle-orm/pg-core";
 
-export const sexEnum = pgEnum("sex", ["Male", "Female", "Others"]);
+export const sexEnum = pgEnum("gender", ["Male", "Female", "Others"]);
 export const relationEnum = pgEnum("relation_type", ["Father", "Husband"]);
 
 export const criminals = pgTable(
@@ -18,8 +18,8 @@ export const criminals = pgTable(
   {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     name: varchar("name", { length: 256 }).notNull(),
-    sex: sexEnum("sex").notNull(),
-    dob: timestamp("dob").defaultNow(),
+    sex: sexEnum("gender").notNull(),
+    dob: timestamp("dob"),
     permanent_address: text("permanent_address"),
     present_address: text("present_address"),
     phone: varchar("phone", { length: 256 }),
