@@ -28,8 +28,6 @@ import {
 import { AuthType } from "../@types/user.type";
 import closeWithGrace from "close-with-grace";
 import { accountRoutes } from "../modules/account/account.routes";
-import { companyMasterRoutes } from "../modules/company_master/company_master.routes";
-import { nameChangeMasterRoutes } from "../modules/name_change_master/name_change_master.routes";
 import { excelRoutes } from "../modules/excel/excel.routes";
 
 declare module "fastify" {
@@ -106,12 +104,6 @@ export async function buildServer() {
   await server.register(userRoutes, { prefix: "/api/users" });
   await server.register(accountRoutes, { prefix: "/api/account" });
   await server.register(excelRoutes, { prefix: "/api/excel" });
-  await server.register(companyMasterRoutes, {
-    prefix: "/api/company-masters",
-  });
-  await server.register(nameChangeMasterRoutes, {
-    prefix: "/api/name-change-masters",
-  });
 
   // delay is the number of milliseconds for the graceful close to finish
   const closeListeners = closeWithGrace(

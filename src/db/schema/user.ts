@@ -9,7 +9,6 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 import { tokens } from "./token";
-import { companyMasters } from "./company_master";
 
 export const statusEnum = pgEnum("status", ["active", "blocked"]);
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -36,5 +35,4 @@ export const users = pgTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   tokens: many(tokens),
-  companyMasterCreated: many(companyMasters),
 }));
