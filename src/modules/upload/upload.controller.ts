@@ -25,3 +25,21 @@ export async function downloadFailedExcel(
     throw new NotFoundError("File not found");
   }
 }
+
+export async function sendImageStream(
+  request: FastifyRequest<{
+    Params: GetUuidParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  try {
+    const { id } = request.params;
+    const filePath = path.resolve(__dirname, "../../../static/images", id);
+    const fileStream = fs.createReadStream(filePath);
+    return reply
+      .header("Content-Disposition", 'attachment; filename="' + id + '"')
+      .send(fileStream);
+  } catch (error) {
+    throw new NotFoundError("File not found");
+  }
+}

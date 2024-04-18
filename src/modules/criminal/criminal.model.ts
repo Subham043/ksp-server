@@ -61,7 +61,6 @@ export const Search_Query = (search: string) =>
     ilike(criminals.phone, `%${search}%`),
     ilike(criminals.aadhar_no, `%${search}%`),
     ilike(criminals.relation_name, search),
-    ilike(criminals.relation_type, `%${search}%`),
     ilike(criminals.caste, `%${search}%`),
     ilike(criminals.fpb_sl_no, `%${search}%`),
     ilike(criminals.fpb_classn_no, `%${search}%`),

@@ -9,3 +9,11 @@ export const getUuidParamSchema = z
   .required();
 
 export type GetUuidParam = z.infer<typeof getUuidParamSchema>;
+
+export const getTokenQuerySchema = z.object({
+  token: z.string({
+    errorMap: () => ({ message: "Token must be a string" }),
+  }),
+});
+
+export type GetTokenQuery = z.infer<typeof getTokenQuerySchema>;

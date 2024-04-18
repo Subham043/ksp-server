@@ -59,13 +59,18 @@ export async function update(
   data: CriminalUpdateType,
   param: GetIdParam
 ): Promise<CriminalType> {
-  let savePhotoFile: string | null = null;
-  let saveAadharFile: string | null = null;
+  let savePhotoFile: string | null | undefined = null;
+  let saveAadharFile: string | null | undefined = null;
+  const existingCriminal = await getById(param.id);
   if (data.aadhar_photo) {
     saveAadharFile = await saveImage(data.aadhar_photo);
+  } else {
+    saveAadharFile = existingCriminal?.aadhar_photo;
   }
   if (data.photo) {
     savePhotoFile = await saveImage(data.photo);
+  } else {
+    savePhotoFile = existingCriminal?.photo;
   }
   return await updateCriminal(
     { ...data, aadhar_photo: saveAadharFile, photo: savePhotoFile },

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { getUuidParamSchema } from "../../common/schemas/uuid_param.schema";
-import { downloadFailedExcel } from "./upload.controller";
+import { downloadFailedExcel, sendImageStream } from "./upload.controller";
 
 export async function uploadRoutes(app: FastifyInstance) {
   app.get(
@@ -12,5 +12,15 @@ export async function uploadRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     downloadFailedExcel
+  );
+  app.get(
+    "/images/:id",
+    {
+      schema: {
+        params: getUuidParamSchema,
+      },
+      preHandler: app.verifyJwt,
+    },
+    sendImageStream
   );
 }
