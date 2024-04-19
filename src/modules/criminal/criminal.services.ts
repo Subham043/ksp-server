@@ -20,7 +20,7 @@ import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { ExcelBuffer, generateExcel } from "../../utils/excel";
 import { ExcelCriminalsColumns } from "./criminal.model";
-import { saveImage } from "../../utils/file";
+import { deleteImage, saveImage } from "../../utils/file";
 
 /**
  * Create a new criminal with the provided criminal information.
@@ -64,11 +64,14 @@ export async function update(
   const existingCriminal = await getById(param.id);
   if (data.aadhar_photo) {
     saveAadharFile = await saveImage(data.aadhar_photo);
+    existingCriminal?.aadhar_photo &&
+      deleteImage(existingCriminal.aadhar_photo);
   } else {
     saveAadharFile = existingCriminal?.aadhar_photo;
   }
   if (data.photo) {
     savePhotoFile = await saveImage(data.photo);
+    existingCriminal?.photo && deleteImage(existingCriminal.photo);
   } else {
     savePhotoFile = existingCriminal?.photo;
   }
@@ -154,5 +157,7 @@ export async function destroy(params: GetIdParam): Promise<CriminalType> {
 
   const criminal = await findById(params);
   await remove(id);
+  criminal?.aadhar_photo && deleteImage(criminal.aadhar_photo);
+  criminal?.photo && deleteImage(criminal.photo);
   return criminal;
 }
