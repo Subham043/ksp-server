@@ -19,7 +19,7 @@ export async function uploadRoutes(app: FastifyInstance) {
       schema: {
         params: getUuidParamSchema,
       },
-      preHandler: app.verifyJwt,
+      // preHandler: app.verifyJwt,
     },
     sendImageStream
   );
