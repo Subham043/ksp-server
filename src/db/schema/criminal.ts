@@ -9,6 +9,7 @@ import {
 import { users } from "./user";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { text } from "drizzle-orm/pg-core";
+import { bigint } from "drizzle-orm/pg-core";
 
 export const sexEnum = pgEnum("gender", ["Male", "Female", "Others"]);
 export const relationEnum = pgEnum("relation_type", ["Father", "Husband"]);
@@ -37,7 +38,7 @@ export const criminals = pgTable(
     }),
     native_ps: varchar("native_ps", { length: 256 }),
     native_district: varchar("native_district", { length: 256 }),
-    createdBy: bigserial("createdBy", { mode: "number" })
+    createdBy: bigint("createdBy", { mode: "number" })
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("createdAt").defaultNow(),

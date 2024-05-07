@@ -30,6 +30,7 @@ import closeWithGrace from "close-with-grace";
 import { accountRoutes } from "../modules/account/account.routes";
 import { uploadRoutes } from "../modules/upload/upload.routes";
 import { criminalRoutes } from "../modules/criminal/criminal.routes";
+import { crimeRoutes } from "../modules/crime/crime.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -101,6 +102,7 @@ export async function buildServer() {
   await server.register(authRoutes, { prefix: "/api/auth" });
   await server.register(userRoutes, { prefix: "/api/users" });
   await server.register(criminalRoutes, { prefix: "/api/criminals" });
+  await server.register(crimeRoutes, { prefix: "/api/crimes" });
   await server.register(accountRoutes, { prefix: "/api/account" });
   await server.register(uploadRoutes, { prefix: "/api/upload" });
 
