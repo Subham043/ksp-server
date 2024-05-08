@@ -59,11 +59,15 @@ export const verifyJwtDecorator = async (
   done: (err?: FastifyError) => void
 ) => {
   try {
+    const customRequestQuery = request.query as { token?: string };
+    const authQuery = customRequestQuery.token ?? undefined;
     const authHeader = request.headers.authorization ?? undefined;
     const authCookie = request.cookies[env.APP_NAME + "_Auth"] ?? undefined;
-    if (authHeader || authCookie) {
+    if (authHeader || authQuery || authCookie) {
       const token =
-        authCookie || (authHeader ? authHeader.replace("Bearer ", "") : "");
+        authCookie ||
+        authQuery ||
+        (authHeader ? authHeader.replace("Bearer ", "") : "");
       const user = request.server.jwt.verify<AuthType>(token);
       if (user) {
         const verifyUser = await getById(user.id);
