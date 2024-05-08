@@ -12,7 +12,12 @@ import { text } from "drizzle-orm/pg-core";
 import { bigint } from "drizzle-orm/pg-core";
 
 export const sexEnum = pgEnum("gender", ["Male", "Female", "Others"]);
-export const relationEnum = pgEnum("relation_type", ["Father", "Husband"]);
+export const relationEnum = pgEnum("relation_type", [
+  "Father",
+  "Husband",
+  "Mother",
+  "Wife",
+]);
 
 export const criminals = pgTable(
   "criminals",

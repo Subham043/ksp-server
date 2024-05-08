@@ -1,4 +1,4 @@
-import { desc, ilike, or } from "drizzle-orm";
+import { desc, eq, ilike, or } from "drizzle-orm";
 import db from "../../db";
 import { criminals } from "../../db/schema/criminal";
 import { WorksheetColumnsType } from "../../utils/excel";
@@ -55,6 +55,7 @@ export const Select_Master_Query = db.select(CriminalSelect).from(criminals);
 
 export const Search_Query = (search: string) =>
   or(
+    isNaN(Number(search)) ? undefined : eq(criminals.id, Number(search)),
     ilike(criminals.name, `%${search}%`),
     ilike(criminals.permanent_address, `%${search}%`),
     ilike(criminals.present_address, `%${search}%`),

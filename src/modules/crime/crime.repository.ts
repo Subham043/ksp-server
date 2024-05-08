@@ -22,9 +22,14 @@ import {
 export async function createCrime(
   data: CrimeCreateType & { createdBy: number }
 ): Promise<CrimeType> {
+  const { hsClosingDate, hsOpeningDate, ...rest } = data;
   const result = await db
     .insert(crimes)
-    .values(data)
+    .values({
+      ...rest,
+      hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : new Date(),
+      hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : new Date(),
+    })
     .onConflictDoNothing()
     .returning(CrimeSelect);
   const crime = await getById(result[0].id);
@@ -45,9 +50,14 @@ export async function updateCrime(
   data: CrimeUpdateType,
   id: number
 ): Promise<CrimeType> {
+  const { hsClosingDate, hsOpeningDate, ...rest } = data;
   const result = await db
     .update(crimes)
-    .set(data)
+    .set({
+      ...rest,
+      hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : new Date(),
+      hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : new Date(),
+    })
     .where(eq(crimes.id, id))
     .returning(CrimeSelect);
   const crime = await getById(id);

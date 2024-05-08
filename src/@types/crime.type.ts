@@ -4,8 +4,8 @@ export type CrimeType = {
   sectionOfLaw: string;
   mobFileNo?: string | null;
   hsNo?: string | null;
-  hsOpeningData?: Date | null;
-  hsClosingData?: Date | null;
+  hsOpeningDate?: Date | null;
+  hsClosingDate?: Date | null;
   aliases?: string | null;
   ageWhileOpening?: string | null;
   crimeGroup?: string | null;

@@ -64,9 +64,9 @@ export const createCriminalBodySchema = z.object({
     .trim()
     .optional(),
   relation_type: z
-    .enum(["Father", "Husband"], {
+    .enum(["Father", "Husband", "Mother", "Wife"], {
       errorMap: () => ({
-        message: "Relation Type must be one of [Father, Husband]",
+        message: "Relation Type must be one of [Father, Husband, Mother, Wife]",
       }),
     })
     .optional(),
@@ -104,7 +104,6 @@ export const createCriminalBodySchema = z.object({
         message: "Educational qualification must be a string",
       }),
     })
-    .url({ message: "Educational qualification must be a valid url" })
     .trim()
     .optional(),
   native_ps: z
