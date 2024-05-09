@@ -44,7 +44,7 @@ export type CrimeType = {
   moustache?: string | null;
   nose?: string | null;
   gang: "Yes" | "No";
-  gangStength?: string | null;
+  gangStrength?: string | null;
   criminal: number;
   name?: string | null;
   createdAt?: Date | null;

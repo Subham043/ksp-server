@@ -13,8 +13,8 @@ export const crimes = pgTable("crimes", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   mobFileNo: varchar("mobFileNo", { length: 256 }),
   hsNo: varchar("hsNo", { length: 256 }),
-  hsOpeningDate: timestamp("hsOpeningDate").defaultNow(),
-  hsClosingDate: timestamp("hsClosingDate").defaultNow(),
+  hsOpeningDate: timestamp("hsOpeningDate"),
+  hsClosingDate: timestamp("hsClosingDate"),
   typeOfCrime: varchar("typeOfCrime", { length: 256 }).notNull(),
   sectionOfLaw: varchar("sectionOfLaw", { length: 256 }).notNull(),
   aliases: text("aliases"),
@@ -55,7 +55,7 @@ export const crimes = pgTable("crimes", {
   moustache: text("moustache"),
   nose: text("nose"),
   gang: gangEnum("isGang").notNull(),
-  gangStength: varchar("gangStength", { length: 256 }),
+  gangStrength: varchar("gangStrength", { length: 256 }),
   createdBy: bigint("createdBy", { mode: "number" })
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),

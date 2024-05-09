@@ -27,8 +27,8 @@ export async function createCrime(
     .insert(crimes)
     .values({
       ...rest,
-      hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : new Date(),
-      hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : new Date(),
+      hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : undefined,
+      hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : undefined,
     })
     .onConflictDoNothing()
     .returning(CrimeSelect);
@@ -51,12 +51,17 @@ export async function updateCrime(
   id: number
 ): Promise<CrimeType> {
   const { hsClosingDate, hsOpeningDate, ...rest } = data;
+  const updateData = { ...rest } as CrimeUpdateType;
+  if (hsClosingDate) {
+    updateData.hsClosingDate = new Date(hsClosingDate);
+  }
+  if (hsOpeningDate) {
+    updateData.hsOpeningDate = new Date(hsOpeningDate);
+  }
   const result = await db
     .update(crimes)
     .set({
-      ...rest,
-      hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : new Date(),
-      hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : new Date(),
+      ...updateData,
     })
     .where(eq(crimes.id, id))
     .returning(CrimeSelect);

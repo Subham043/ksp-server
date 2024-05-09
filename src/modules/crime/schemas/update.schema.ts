@@ -251,7 +251,7 @@ export const updateCrimeBodySchema = z.object({
     })
     .trim()
     .optional(),
-  gangStength: z
+  gangStrength: z
     .string({
       errorMap: () => ({ message: "Nose must be a string" }),
     })

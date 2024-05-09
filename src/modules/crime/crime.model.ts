@@ -59,7 +59,7 @@ export const ExcelCrimesColumns: WorksheetColumnsType = [
   { key: "moustache", header: "Moustache" },
   { key: "nose", header: "Nose" },
   { key: "gang", header: "Gang" },
-  { key: "gangStength", header: "Gang Stength" },
+  { key: "gangStrength", header: "Gang Stength" },
   { key: "criminal", header: "Criminal Id" },
   { key: "name", header: "Criminal Name" },
 ];
@@ -113,7 +113,7 @@ export const CrimeSelect = {
   moustache: crimes.moustache,
   nose: crimes.nose,
   gang: crimes.gang,
-  gangStength: crimes.gangStength,
+  gangStrength: crimes.gangStrength,
   criminal: crimes.criminal,
   createdAt: crimes.createdAt,
 };
