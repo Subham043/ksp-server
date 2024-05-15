@@ -93,10 +93,11 @@ export async function update(
   user: UpdateUserBody,
   param: GetIdParam
 ): Promise<UserType> {
-  const { name, email } = user;
+  const { name, email, role } = user;
   const data = {
     name,
     email,
+    role,
   };
 
   return await updateUser(data, param.id);
@@ -199,6 +200,7 @@ export async function importExcel(data: PostExcelBody): Promise<{
         email: row.getCell(2).value?.toString(),
         password: row.getCell(3).value?.toString(),
         confirm_password: row.getCell(4).value?.toString(),
+        role: row.getCell(5).value?.toString(),
       };
       userInsertData.push(userData);
     }

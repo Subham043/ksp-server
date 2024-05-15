@@ -126,6 +126,120 @@ export const createCriminalBodySchema = z.object({
     })
     .trim()
     .optional(),
+  voice: z
+    .string({
+      errorMap: () => ({ message: "Voice must be a string" }),
+    })
+    .trim()
+    .optional(),
+  build: z
+    .string({
+      errorMap: () => ({ message: "Build must be a string" }),
+    })
+    .trim()
+    .optional(),
+  complexion: z
+    .string({
+      errorMap: () => ({ message: "Complexion must be a string" }),
+    })
+    .trim()
+    .optional(),
+  teeth: z
+    .string({
+      errorMap: () => ({ message: "Teeth must be a string" }),
+    })
+    .trim()
+    .optional(),
+  hair: z
+    .string({
+      errorMap: () => ({ message: "Hair must be a string" }),
+    })
+    .trim()
+    .optional(),
+  eyes: z
+    .string({
+      errorMap: () => ({ message: "Eyes must be a string" }),
+    })
+    .trim()
+    .optional(),
+  habbits: z
+    .string({
+      errorMap: () => ({ message: "Habbits must be a string" }),
+    })
+    .trim()
+    .optional(),
+  burnMarks: z
+    .string({
+      errorMap: () => ({ message: "Burn Marks must be a string" }),
+    })
+    .trim()
+    .optional(),
+  tattoo: z
+    .string({
+      errorMap: () => ({ message: "Tattoo must be a string" }),
+    })
+    .trim()
+    .optional(),
+  mole: z
+    .string({
+      errorMap: () => ({ message: "Mole must be a string" }),
+    })
+    .trim()
+    .optional(),
+  scar: z
+    .string({
+      errorMap: () => ({ message: "Scar must be a string" }),
+    })
+    .trim()
+    .optional(),
+  leucoderma: z
+    .string({
+      errorMap: () => ({ message: "Leucoderma must be a string" }),
+    })
+    .trim()
+    .optional(),
+  faceHead: z
+    .string({
+      errorMap: () => ({ message: "Face/Head must be a string" }),
+    })
+    .trim()
+    .optional(),
+  otherPartsBody: z
+    .string({
+      errorMap: () => ({ message: "Other Parts of Body must be a string" }),
+    })
+    .trim()
+    .optional(),
+  dressUsed: z
+    .string({
+      errorMap: () => ({ message: "Dress Used must be a string" }),
+    })
+    .trim()
+    .optional(),
+  beard: z
+    .string({
+      errorMap: () => ({ message: "Beard must be a string" }),
+    })
+    .trim()
+    .optional(),
+  face: z
+    .string({
+      errorMap: () => ({ message: "Face must be a string" }),
+    })
+    .trim()
+    .optional(),
+  moustache: z
+    .string({
+      errorMap: () => ({ message: "Moustache must be a string" }),
+    })
+    .trim()
+    .optional(),
+  nose: z
+    .string({
+      errorMap: () => ({ message: "Nose must be a string" }),
+    })
+    .trim()
+    .optional(),
   photo: z
     .any()
     .refine((photo) => {

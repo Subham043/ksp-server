@@ -9,7 +9,6 @@ import {
   CriminalSelect,
   Descending_Criminal_CreatedAt,
   Search_Query,
-  Select_Master_Query,
 } from "./criminal.model";
 
 /**
@@ -21,9 +20,13 @@ import {
 export async function createCriminal(
   data: CriminalPostRepositoryType & { createdBy: number }
 ): Promise<CriminalType> {
+  const { dob, ...rest } = data;
   const result = await db
     .insert(criminals)
-    .values(data)
+    .values({
+      ...rest,
+      dob: dob ? new Date(dob) : undefined,
+    })
     .onConflictDoNothing()
     .returning(CriminalSelect);
   return result[0];
@@ -40,9 +43,16 @@ export async function updateCriminal(
   data: CriminalPostRepositoryType,
   id: number
 ): Promise<CriminalType> {
+  const { dob, ...rest } = data;
+  const updateData = { ...rest } as CriminalPostRepositoryType;
+  if (dob) {
+    updateData.dob = new Date(dob);
+  }
   const result = await db
     .update(criminals)
-    .set(data)
+    .set({
+      ...updateData,
+    })
     .where(eq(criminals.id, id))
     .returning(CriminalSelect);
   return result[0];
@@ -60,9 +70,10 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CriminalType[]> {
-  const data = await Select_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  )
+  const data = await db
+    .select(CriminalSelect)
+    .from(criminals)
+    .where(search ? Search_Query(search) : undefined)
     .orderBy(Descending_Criminal_CreatedAt)
     .limit(limit)
     .offset(offset);
@@ -77,9 +88,11 @@ export async function paginate(
  * @return {Promise<CriminalType[]>} the paginated criminal data as a promise
  */
 export async function getAll(search?: string): Promise<CriminalType[]> {
-  const data = await Select_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  ).orderBy(Descending_Criminal_CreatedAt);
+  const data = await db
+    .select(CriminalSelect)
+    .from(criminals)
+    .where(search ? Search_Query(search) : undefined)
+    .orderBy(Descending_Criminal_CreatedAt);
 
   return data;
 }
@@ -107,7 +120,10 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<CriminalType|null>} The criminal data if found, otherwise null
  */
 export async function getById(id: number): Promise<CriminalType | null> {
-  const data = await Select_Master_Query.where(eq(criminals.id, id));
+  const data = await db
+    .select(CriminalSelect)
+    .from(criminals)
+    .where(eq(criminals.id, id));
   if (data.length > 0) {
     return data[0];
   }

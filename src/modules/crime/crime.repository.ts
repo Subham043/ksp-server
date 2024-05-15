@@ -9,9 +9,10 @@ import {
 import {
   CrimeSelect,
   Descending_Crime_CreatedAt,
+  MasterSelect,
   Search_Query,
-  Select_Master_Query,
 } from "./crime.model";
+import { criminals } from "../../db/schema/criminal";
 
 /**
  * Create a new crime with the provided data.
@@ -84,9 +85,11 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CrimeType[]> {
-  const data = await Select_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  )
+  const data = await db
+    .select(MasterSelect)
+    .from(crimes)
+    .leftJoin(criminals, eq(crimes.criminal, criminals.id))
+    .where(search ? Search_Query(search) : undefined)
     .orderBy(Descending_Crime_CreatedAt)
     .limit(limit)
     .offset(offset);
@@ -101,9 +104,12 @@ export async function paginate(
  * @return {Promise<CrimeType[]>} the paginated crime data as a promise
  */
 export async function getAll(search?: string): Promise<CrimeType[]> {
-  const data = await Select_Master_Query.where(
-    search ? Search_Query(search) : undefined
-  ).orderBy(Descending_Crime_CreatedAt);
+  const data = await db
+    .select(MasterSelect)
+    .from(crimes)
+    .leftJoin(criminals, eq(crimes.criminal, criminals.id))
+    .where(search ? Search_Query(search) : undefined)
+    .orderBy(Descending_Crime_CreatedAt);
 
   return data;
 }
@@ -131,7 +137,11 @@ export async function count(search?: string): Promise<number> {
  * @return {Promise<CrimeType|null>} The crime data if found, otherwise null
  */
 export async function getById(id: number): Promise<CrimeType | null> {
-  const data = await Select_Master_Query.where(eq(crimes.id, id));
+  const data = await db
+    .select(MasterSelect)
+    .from(crimes)
+    .leftJoin(criminals, eq(crimes.criminal, criminals.id))
+    .where(eq(crimes.id, id));
   if (data.length > 0) {
     return data[0];
   }

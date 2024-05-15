@@ -34,6 +34,11 @@ export const createUserBodySchema = z
         message: "Confirm Password must be less than 256 characters",
       })
       .trim(),
+    role: z.enum(["user", "admin"], {
+      errorMap: () => ({
+        message: "Role must be one of [user, admin]",
+      }),
+    }),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords don't match",

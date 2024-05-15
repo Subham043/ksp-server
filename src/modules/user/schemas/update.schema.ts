@@ -17,6 +17,11 @@ export const updateUserBodySchema = z.object({
     .max(256, { message: "Email must be less than 256 characters" })
     .email({ message: "Email must be a valid email" })
     .trim(),
+  role: z.enum(["user", "admin"], {
+    errorMap: () => ({
+      message: "Role must be one of [user, admin]",
+    }),
+  }),
 });
 
 export const updateUserUniqueEmailSchema = z

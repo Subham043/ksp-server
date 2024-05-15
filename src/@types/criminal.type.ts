@@ -4,6 +4,7 @@ export type CriminalType = {
   id: number;
   name: string;
   sex: "Male" | "Female" | "Others";
+  dob?: Date | null;
   permanent_address?: string | null | undefined;
   present_address?: string | null | undefined;
   phone?: string | null | undefined;
@@ -19,6 +20,25 @@ export type CriminalType = {
   educational_qualification?: string | null | undefined;
   native_ps?: string | null | undefined;
   native_district?: string | null | undefined;
+  voice?: string | null;
+  build?: string | null;
+  complexion?: string | null;
+  teeth?: string | null;
+  hair?: string | null;
+  eyes?: string | null;
+  habbits?: string | null;
+  burnMarks?: string | null;
+  tattoo?: string | null;
+  mole?: string | null;
+  scar?: string | null;
+  leucoderma?: string | null;
+  faceHead?: string | null;
+  otherPartsBody?: string | null;
+  dressUsed?: string | null;
+  beard?: string | null;
+  face?: string | null;
+  moustache?: string | null;
+  nose?: string | null;
   createdAt?: Date | null;
 };
 
