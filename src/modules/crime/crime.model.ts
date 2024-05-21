@@ -48,6 +48,10 @@ export const ExcelCrimesColumns: WorksheetColumnsType = [
 export const CriminalSelect = {
   name: criminals.name,
 };
+export const CriminalColumn = {
+  id: true,
+  name: true,
+} as const;
 export const CrimeSelect = {
   id: crimes.id,
   typeOfCrime: crimes.typeOfCrime,
@@ -79,6 +83,37 @@ export const CrimeSelect = {
   criminal: crimes.criminal,
   createdAt: crimes.createdAt,
 };
+
+export const CrimeColumn = {
+  id: true,
+  typeOfCrime: true,
+  sectionOfLaw: true,
+  mobFileNo: true,
+  hsNo: true,
+  hsOpeningDate: true,
+  hsClosingDate: true,
+  aliases: true,
+  ageWhileOpening: true,
+  crimeGroup: true,
+  crimeHead: true,
+  crimeClass: true,
+  briefFact: true,
+  cluesLeft: true,
+  languagesKnown: true,
+  languagesUsed: true,
+  placeAttacked: true,
+  placeOfAssemblyAfterOffence: true,
+  placeOfAssemblyBeforeOffence: true,
+  propertiesAttacked: true,
+  styleAssumed: true,
+  toolsUsed: true,
+  tradeMarks: true,
+  transportUsedAfter: true,
+  transportUsedBefore: true,
+  gang: true,
+  gangStrength: true,
+  createdAt: true,
+} as const;
 
 export const MasterSelect = {
   ...CrimeSelect,

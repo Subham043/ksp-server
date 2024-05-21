@@ -7,7 +7,7 @@ import { UpdateUserBody } from "./schemas/update.schema";
 import {
   Descending_User_ID,
   Search_Query,
-  Select_Query,
+  UserColumn,
   UserSelect,
 } from "./user.model";
 
@@ -59,12 +59,13 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<UserType[]> {
-  const data = await Select_Query.where(
-    search ? Search_Query(search) : undefined
-  )
-    .orderBy(Descending_User_ID)
-    .limit(limit)
-    .offset(offset);
+  const data = await db.query.users.findMany({
+    columns: UserColumn,
+    where: search ? Search_Query(search) : undefined,
+    orderBy: Descending_User_ID,
+    limit,
+    offset,
+  });
 
   return data;
 }
@@ -76,9 +77,11 @@ export async function paginate(
  * @return {Promise<UserType[]>} the paginated user data as a promise
  */
 export async function getAll(search?: string): Promise<UserType[]> {
-  const data = await Select_Query.where(
-    search ? Search_Query(search) : undefined
-  ).orderBy(Descending_User_ID);
+  const data = await db.query.users.findMany({
+    columns: UserColumn,
+    where: search ? Search_Query(search) : undefined,
+    orderBy: Descending_User_ID,
+  });
 
   return data;
 }
@@ -105,12 +108,13 @@ export async function count(search?: string): Promise<number> {
  * @param {number} id - The ID of the user to retrieve
  * @return {Promise<UserType|null>} The user data if found, otherwise null
  */
-export async function getById(id: number): Promise<UserType | null> {
-  const data = await Select_Query.where(eq(users.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+export async function getById(id: number): Promise<UserType | undefined> {
+  const data = await db.query.users.findFirst({
+    columns: UserColumn,
+    where: eq(users.id, id),
+    orderBy: Descending_User_ID,
+  });
+  return data;
 }
 
 /**
@@ -119,12 +123,13 @@ export async function getById(id: number): Promise<UserType | null> {
  * @param {string} email - The email of the user to retrieve
  * @return {Promise<UserType | null>} The user information if found, otherwise null
  */
-export async function getByEmail(email: string): Promise<UserType | null> {
-  const data = await Select_Query.where(eq(users.email, email));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+export async function getByEmail(email: string): Promise<UserType | undefined> {
+  const data = await db.query.users.findFirst({
+    columns: UserColumn,
+    where: eq(users.email, email),
+    orderBy: Descending_User_ID,
+  });
+  return data;
 }
 
 /**

@@ -6,6 +6,7 @@ import {
   CriminalType,
 } from "../../@types/criminal.type";
 import {
+  CriminalColumn,
   CriminalSelect,
   Descending_Criminal_CreatedAt,
   Search_Query,
@@ -70,13 +71,13 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CriminalType[]> {
-  const data = await db
-    .select(CriminalSelect)
-    .from(criminals)
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_Criminal_CreatedAt)
-    .limit(limit)
-    .offset(offset);
+  const data = await db.query.criminals.findMany({
+    columns: CriminalColumn,
+    where: search ? Search_Query(search) : undefined,
+    orderBy: Descending_Criminal_CreatedAt,
+    limit,
+    offset,
+  });
 
   return data;
 }
@@ -88,11 +89,11 @@ export async function paginate(
  * @return {Promise<CriminalType[]>} the paginated criminal data as a promise
  */
 export async function getAll(search?: string): Promise<CriminalType[]> {
-  const data = await db
-    .select(CriminalSelect)
-    .from(criminals)
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_Criminal_CreatedAt);
+  const data = await db.query.criminals.findMany({
+    columns: CriminalColumn,
+    where: search ? Search_Query(search) : undefined,
+    orderBy: Descending_Criminal_CreatedAt,
+  });
 
   return data;
 }
@@ -119,15 +120,13 @@ export async function count(search?: string): Promise<number> {
  * @param {number} id - The ID of the criminal to retrieve
  * @return {Promise<CriminalType|null>} The criminal data if found, otherwise null
  */
-export async function getById(id: number): Promise<CriminalType | null> {
-  const data = await db
-    .select(CriminalSelect)
-    .from(criminals)
-    .where(eq(criminals.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+export async function getById(id: number): Promise<CriminalType | undefined> {
+  const data = await db.query.criminals.findFirst({
+    columns: CriminalColumn,
+    where: eq(criminals.id, id),
+  });
+
+  return data;
 }
 
 /**
@@ -138,21 +137,19 @@ export async function getById(id: number): Promise<CriminalType | null> {
  */
 export async function getByAadhar(
   aadhar_no: string
-): Promise<CriminalType | null> {
-  const data = await db
-    .select({
-      id: criminals.id,
-      name: criminals.name,
-      sex: criminals.sex,
-      aadhar_no: criminals.aadhar_no,
-      createdAt: criminals.createdAt,
-    })
-    .from(criminals)
-    .where(eq(criminals.aadhar_no, aadhar_no));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+): Promise<CriminalType | undefined> {
+  const data = await db.query.criminals.findFirst({
+    columns: {
+      id: true,
+      name: true,
+      sex: true,
+      aadhar_no: true,
+      createdAt: true,
+    },
+    where: eq(criminals.aadhar_no, aadhar_no),
+  });
+
+  return data;
 }
 
 /**

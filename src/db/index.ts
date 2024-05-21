@@ -1,6 +1,10 @@
 import env from "../config/env";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
+import { users } from "./schema/user";
+import { tokens } from "./schema/token";
+import { criminals } from "./schema/criminal";
+import { crimes, crimesRelations } from "./schema/crime";
 
 const pool = new pg.Pool({
   host: env.DATABASE_HOST,
@@ -10,6 +14,14 @@ const pool = new pg.Pool({
   database: env.DATABASE_NAME,
 });
 
-export const db = drizzle(pool);
+export const db = drizzle(pool, {
+  schema: {
+    users,
+    tokens,
+    criminals,
+    crimes,
+    crimesRelations,
+  },
+});
 
 export default db;

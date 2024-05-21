@@ -4,19 +4,16 @@ import db from "../../db";
 import { users } from "../../db/schema/user";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
 import { tokens } from "../../db/schema/token";
-import { AuthSelect, AuthTokenSelect } from "./auth.model";
+import { AuthColumn, AuthTokenSelect } from "./auth.model";
 
 export async function getByEmail(
   email: string
-): Promise<(UserType & { password: string }) | null> {
-  const data = await db
-    .select(AuthSelect)
-    .from(users)
-    .where(eq(users.email, email));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+): Promise<(UserType & { password: string }) | undefined> {
+  const data = await db.query.users.findFirst({
+    columns: AuthColumn,
+    where: eq(users.email, email),
+  });
+  return data;
 }
 
 export async function forgotPassword(
@@ -30,17 +27,16 @@ export async function forgotPassword(
     .where(eq(users.email, data.email));
 }
 
-export async function getByKey(key: string): Promise<{ id: number } | null> {
-  const data = await db
-    .select({
-      id: users.id,
-    })
-    .from(users)
-    .where(eq(users.key, key));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+export async function getByKey(
+  key: string
+): Promise<{ id: number } | undefined> {
+  const data = await db.query.users.findFirst({
+    columns: {
+      id: true,
+    },
+    where: eq(users.key, key),
+  });
+  return data;
 }
 
 export async function resetPassword(
@@ -60,10 +56,14 @@ export async function getToken(data: {
   token: string;
   userId: number;
 }): Promise<{ id: number; token: string }[]> {
-  const result = await db
-    .select(AuthTokenSelect)
-    .from(tokens)
-    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)));
+  const result = await db.query.tokens.findMany({
+    columns: {
+      id: true,
+      token: true,
+      createdAt: true,
+    },
+    where: and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)),
+  });
   return result;
 }
 

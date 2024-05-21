@@ -1,6 +1,5 @@
 import { desc, ilike, or } from "drizzle-orm";
 import { users } from "../../db/schema/user";
-import db from "../../db";
 import { WorksheetColumnsType } from "../../utils/excel";
 
 export type UserExcelData = {
@@ -39,9 +38,16 @@ export const UserSelect = {
   createdAt: users.createdAt,
 };
 
-export const Descending_User_ID = desc(users.id);
+export const UserColumn = {
+  id: true,
+  name: true,
+  email: true,
+  status: true,
+  role: true,
+  createdAt: true,
+} as const;
 
-export const Select_Query = db.select(UserSelect).from(users);
+export const Descending_User_ID = desc(users.id);
 
 export const Search_Query = (search: string) =>
   or(ilike(users.name, `%${search}%`), ilike(users.email, `%${search}%`));

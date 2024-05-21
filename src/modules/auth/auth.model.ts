@@ -12,6 +12,16 @@ export const AuthSelect = {
   createdAt: users.createdAt,
 };
 
+export const AuthColumn = {
+  id: true,
+  name: true,
+  email: true,
+  status: true,
+  role: true,
+  password: true,
+  createdAt: true,
+} as const;
+
 export const AuthTokenSelect = {
   id: tokens.id,
   token: tokens.token,

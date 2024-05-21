@@ -3,11 +3,14 @@ import db from "../../db";
 import { crimes } from "../../db/schema/crime";
 import {
   CrimeCreateType,
+  CrimeQueryType,
   CrimeType,
   CrimeUpdateType,
 } from "../../@types/crime.type";
 import {
+  CrimeColumn,
   CrimeSelect,
+  CriminalColumn,
   Descending_Crime_CreatedAt,
   MasterSelect,
   Search_Query,
@@ -22,7 +25,7 @@ import { criminals } from "../../db/schema/criminal";
  */
 export async function createCrime(
   data: CrimeCreateType & { createdBy: number }
-): Promise<CrimeType> {
+): Promise<CrimeQueryType | undefined> {
   const { hsClosingDate, hsOpeningDate, ...rest } = data;
   const result = await db
     .insert(crimes)
@@ -34,10 +37,7 @@ export async function createCrime(
     .onConflictDoNothing()
     .returning(CrimeSelect);
   const crime = await getById(result[0].id);
-  if (crime) {
-    return crime;
-  }
-  return result[0];
+  return crime;
 }
 
 /**
@@ -50,7 +50,7 @@ export async function createCrime(
 export async function updateCrime(
   data: CrimeUpdateType,
   id: number
-): Promise<CrimeType> {
+): Promise<CrimeQueryType | undefined> {
   const { hsClosingDate, hsOpeningDate, ...rest } = data;
   const updateData = { ...rest } as CrimeUpdateType;
   if (hsClosingDate) {
@@ -59,7 +59,7 @@ export async function updateCrime(
   if (hsOpeningDate) {
     updateData.hsOpeningDate = new Date(hsOpeningDate);
   }
-  const result = await db
+  await db
     .update(crimes)
     .set({
       ...updateData,
@@ -67,10 +67,7 @@ export async function updateCrime(
     .where(eq(crimes.id, id))
     .returning(CrimeSelect);
   const crime = await getById(id);
-  if (crime) {
-    return crime;
-  }
-  return result[0];
+  return crime;
 }
 
 /**
@@ -84,15 +81,19 @@ export async function paginate(
   limit: number,
   offset: number,
   search?: string
-): Promise<CrimeType[]> {
-  const data = await db
-    .select(MasterSelect)
-    .from(crimes)
-    .leftJoin(criminals, eq(crimes.criminal, criminals.id))
-    .where(search ? Search_Query(search) : undefined)
-    .orderBy(Descending_Crime_CreatedAt)
-    .limit(limit)
-    .offset(offset);
+): Promise<CrimeQueryType[]> {
+  const data = await db.query.crimes.findMany({
+    columns: CrimeColumn,
+    with: {
+      criminal: {
+        columns: CriminalColumn,
+      },
+    },
+    where: search ? Search_Query(search) : undefined,
+    orderBy: Descending_Crime_CreatedAt,
+    limit,
+    offset,
+  });
 
   return data;
 }
@@ -136,16 +137,17 @@ export async function count(search?: string): Promise<number> {
  * @param {number} id - The ID of the crime to retrieve
  * @return {Promise<CrimeType|null>} The crime data if found, otherwise null
  */
-export async function getById(id: number): Promise<CrimeType | null> {
-  const data = await db
-    .select(MasterSelect)
-    .from(crimes)
-    .leftJoin(criminals, eq(crimes.criminal, criminals.id))
-    .where(eq(crimes.id, id));
-  if (data.length > 0) {
-    return data[0];
-  }
-  return null;
+export async function getById(id: number): Promise<CrimeQueryType | undefined> {
+  const data = await db.query.crimes.findFirst({
+    columns: CrimeColumn,
+    with: {
+      criminal: {
+        columns: CriminalColumn,
+      },
+    },
+    where: eq(crimes.id, id),
+  });
+  return data;
 }
 
 /**
@@ -178,14 +180,8 @@ export async function getByCrime(criminal: number): Promise<CrimeType | null> {
  * @param {number} id - the ID of the crime to be removed
  * @return {Promise<CrimeType>} a promise that resolves once the crime is removed
  */
-export async function remove(id: number): Promise<CrimeType> {
+export async function remove(id: number): Promise<CrimeQueryType | undefined> {
   const crime = await getById(id);
-  const result = await db
-    .delete(crimes)
-    .where(eq(crimes.id, id))
-    .returning(CrimeSelect);
-  if (crime) {
-    return crime;
-  }
-  return result[0];
+  await db.delete(crimes).where(eq(crimes.id, id)).returning(CrimeSelect);
+  return crime;
 }

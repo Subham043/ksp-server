@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { tokens } from "./token";
 import { criminals } from "./criminal";
+import { index } from "drizzle-orm/pg-core";
 
 export const statusEnum = pgEnum("status", ["active", "blocked"]);
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -29,6 +30,7 @@ export const users = pgTable(
   },
   (users) => {
     return {
+      keyIndex: index("key_idx").on(users.key),
       emailIndex: uniqueIndex("email_idx").on(users.id, users.email),
     };
   }

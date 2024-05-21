@@ -87,6 +87,48 @@ export const CriminalSelect = {
   createdAt: criminals.createdAt,
 };
 
+export const CriminalColumn = {
+  id: true,
+  name: true,
+  sex: true,
+  dob: true,
+  permanent_address: true,
+  present_address: true,
+  phone: true,
+  aadhar_no: true,
+  aadhar_photo: true,
+  photo: true,
+  relation_name: true,
+  relation_type: true,
+  caste: true,
+  fpb_sl_no: true,
+  fpb_classn_no: true,
+  occupation: true,
+  educational_qualification: true,
+  native_ps: true,
+  native_district: true,
+  voice: true,
+  build: true,
+  complexion: true,
+  teeth: true,
+  hair: true,
+  eyes: true,
+  habbits: true,
+  burnMarks: true,
+  tattoo: true,
+  mole: true,
+  scar: true,
+  leucoderma: true,
+  faceHead: true,
+  otherPartsBody: true,
+  dressUsed: true,
+  beard: true,
+  face: true,
+  moustache: true,
+  nose: true,
+  createdAt: true,
+} as const;
+
 export const Descending_Criminal_CreatedAt = desc(criminals.createdAt);
 
 export const Select_Master_Query = db.select(CriminalSelect).from(criminals);

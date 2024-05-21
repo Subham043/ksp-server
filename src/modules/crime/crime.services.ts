@@ -10,6 +10,7 @@ import {
 import { NotFoundError } from "../../utils/exceptions";
 import {
   CrimeCreateType,
+  CrimeQueryType,
   CrimeType,
   CrimeUpdateType,
 } from "../../@types/crime.type";
@@ -30,7 +31,7 @@ import { ExcelCrimesColumns } from "./crime.model";
 export async function create(
   data: CrimeCreateType,
   userId: number
-): Promise<CrimeType> {
+): Promise<CrimeQueryType | undefined> {
   return await createCrime({
     ...data,
     createdBy: userId,
@@ -47,7 +48,7 @@ export async function create(
 export async function update(
   data: CrimeUpdateType,
   param: GetIdParam
-): Promise<CrimeType> {
+): Promise<CrimeQueryType | undefined> {
   return await updateCrime({ ...data }, param.id);
 }
 
@@ -57,7 +58,7 @@ export async function update(
  * @param {GetIdParam} params - the parameters for finding the crime
  * @return {Promise<CrimeType>} the crime found by ID
  */
-export async function findById(params: GetIdParam): Promise<CrimeType> {
+export async function findById(params: GetIdParam): Promise<CrimeQueryType> {
   const { id } = params;
 
   const crime = await getById(id);
@@ -71,11 +72,11 @@ export async function findById(params: GetIdParam): Promise<CrimeType> {
  * Find crime by pagination.
  *
  * @param {GetPaginationQuery} querystring - the parameters for finding the crime
- * @return {Promise<{crime:CrimeType[]} & PaginationType>} the crime found by ID
+ * @return {Promise<{crime:CrimeQueryType[]} & PaginationType>} the crime found by ID
  */
 export async function list(querystring: GetPaginationQuery): Promise<
   {
-    crime: CrimeType[];
+    crime: CrimeQueryType[];
   } & PaginationType
 > {
   const { limit, offset } = getPaginationParams({
@@ -122,7 +123,9 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
  * @param {GetIdParam} params - the parameters for destroying the crime
  * @return {Promise<CrimeType>} the destroyed crime
  */
-export async function destroy(params: GetIdParam): Promise<CrimeType> {
+export async function destroy(
+  params: GetIdParam
+): Promise<CrimeQueryType | undefined> {
   const { id } = params;
   const crime = await findById(params);
   await remove(id);
