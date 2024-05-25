@@ -3,6 +3,7 @@ import db from "../../db";
 import { crimes } from "../../db/schema/crime";
 import { WorksheetColumnsType } from "../../utils/excel";
 import { criminals } from "../../db/schema/criminal";
+import { crimesByCriminals } from "../../db/schema/crimesByCriminals";
 
 export const ExcelCrimesColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
@@ -41,8 +42,8 @@ export const ExcelCrimesColumns: WorksheetColumnsType = [
   { key: "transportUsedBefore", header: "Transport Used Before" },
   { key: "gang", header: "Gang" },
   { key: "gangStrength", header: "Gang Stength" },
-  { key: "criminal", header: "Criminal Id" },
-  { key: "name", header: "Criminal Name" },
+  { key: "criminal_ids", header: "Criminal Ids" },
+  { key: "criminal_names", header: "Criminal Names" },
 ];
 
 export const CriminalSelect = {
@@ -80,7 +81,6 @@ export const CrimeSelect = {
   transportUsedBefore: crimes.transportUsedBefore,
   gang: crimes.gang,
   gangStrength: crimes.gangStrength,
-  criminal: crimes.criminal,
   createdAt: crimes.createdAt,
 };
 
@@ -125,7 +125,8 @@ export const Descending_Crime_CreatedAt = desc(crimes.createdAt);
 export const Select_Master_Query = db
   .select(MasterSelect)
   .from(crimes)
-  .leftJoin(criminals, eq(crimes.criminal, criminals.id));
+  .leftJoin(crimesByCriminals, eq(crimes.id, crimesByCriminals.crimeId))
+  .leftJoin(criminals, eq(criminals.id, crimesByCriminals.criminalId));
 
 export const Search_Query = (search: string) =>
   or(
@@ -152,3 +153,6 @@ export const Search_Query = (search: string) =>
     ilike(crimes.transportUsedAfter, `%${search}%`),
     ilike(crimes.transportUsedBefore, `%${search}%`)
   );
+
+export const Search_Criminal_Query = (search: string) =>
+  ilike(criminals.name, `%${search}%`);

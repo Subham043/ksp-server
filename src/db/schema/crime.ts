@@ -4,7 +4,7 @@ import { users } from "./user";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { text } from "drizzle-orm/pg-core";
 import { bigint } from "drizzle-orm/pg-core";
-import { criminals } from "./criminal";
+import { crimesByCriminals } from "./crimesByCriminals";
 
 export const gangEnum = pgEnum("isGang", ["Yes", "No"]);
 export const relationEnum = pgEnum("relation_type", ["Father", "Husband"]);
@@ -40,20 +40,14 @@ export const crimes = pgTable("crimes", {
   createdBy: bigint("createdBy", { mode: "number" })
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  criminal: bigint("criminalId", { mode: "number" })
-    .notNull()
-    .references(() => criminals.id, { onDelete: "cascade" }),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-export const crimesRelations = relations(crimes, ({ one }) => ({
+export const crimesRelations = relations(crimes, ({ one, many }) => ({
   creator: one(users, {
     fields: [crimes.createdBy],
     references: [users.id],
   }),
-  criminal: one(criminals, {
-    fields: [crimes.criminal],
-    references: [criminals.id],
-  }),
+  criminals: many(crimesByCriminals),
 }));

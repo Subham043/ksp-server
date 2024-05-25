@@ -27,10 +27,16 @@ export type CrimeQueryType = {
   gang: "Yes" | "No";
   gangStrength?: string | null;
   createdAt?: Date | null;
-  criminal: {
-    id: number;
-    name: string;
-  };
+  criminals: {
+    createdAt: Date | null;
+    criminalId: number;
+    updatedAt: Date | null;
+    crimeId: number;
+    criminal: {
+      id: number;
+      name: string;
+    };
+  }[];
 };
 
 export type CrimeType = {
@@ -61,14 +67,18 @@ export type CrimeType = {
   transportUsedBefore?: string | null;
   gang: "Yes" | "No";
   gangStrength?: string | null;
-  criminal: number;
-  name?: string | null;
+  criminals: number[];
   createdAt?: Date | null;
 };
 
-export type CrimeOmitType = Omit<CrimeType, "id" | "createdAt" | "name">;
+export type CrimeOmitType = Omit<CrimeType, "id" | "createdAt">;
 export interface CrimeCreateType extends CrimeOmitType {}
 
 export interface CrimeUpdateType extends CrimeCreateType {}
 
 export interface CrimePostRepositoryType extends CrimeOmitType {}
+
+export interface CrimeExcelType extends CrimeQueryType {
+  criminal_ids: string;
+  criminal_names: string;
+}

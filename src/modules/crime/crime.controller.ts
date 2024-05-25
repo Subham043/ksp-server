@@ -77,7 +77,7 @@ export async function createCrime(
   reply: FastifyReply
 ): Promise<void> {
   await createCrimeUniqueSchema.parseAsync({
-    criminal: request.body.criminal,
+    criminals: request.body.criminals,
   });
   const result = await create(request.body, request.authenticatedUser!.id);
   return reply.code(201).type("application/json").send({
@@ -104,7 +104,7 @@ export async function updateCrime(
 ): Promise<void> {
   await updateCrimeUniqueSchema.parseAsync({
     id: request.params.id,
-    criminal: request.body.criminal,
+    criminals: request.body.criminals,
   });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({

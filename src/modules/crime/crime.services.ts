@@ -10,8 +10,8 @@ import {
 import { NotFoundError } from "../../utils/exceptions";
 import {
   CrimeCreateType,
+  CrimeExcelType,
   CrimeQueryType,
-  CrimeType,
   CrimeUpdateType,
 } from "../../@types/crime.type";
 import { getPaginationKeys, getPaginationParams } from "../../utils/pagination";
@@ -106,7 +106,7 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
 }> {
   const crimes = await getAll(querystring.search);
 
-  const buffer = await generateExcel<CrimeType>(
+  const buffer = await generateExcel<CrimeExcelType>(
     "Crimes",
     ExcelCrimesColumns,
     crimes

@@ -10,6 +10,7 @@ import { users } from "./user";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { text } from "drizzle-orm/pg-core";
 import { bigint } from "drizzle-orm/pg-core";
+import { crimesByCriminals } from "./crimesByCriminals";
 
 export const sexEnum = pgEnum("gender", ["Male", "Female", "Others"]);
 export const relationEnum = pgEnum("relation_type", [
@@ -78,9 +79,10 @@ export const criminals = pgTable(
   }
 );
 
-export const criminalsRelations = relations(criminals, ({ one }) => ({
+export const criminalsRelations = relations(criminals, ({ one, many }) => ({
   creator: one(users, {
     fields: [criminals.createdBy],
     references: [users.id],
   }),
+  crimes: many(crimesByCriminals),
 }));

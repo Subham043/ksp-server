@@ -166,9 +166,14 @@ export const updateCrimeBodySchema = z.object({
     })
     .trim()
     .optional(),
-  criminal: z.number({
-    errorMap: () => ({ message: "Criminal must be a number" }),
-  }),
+  criminals: z
+    .array(
+      z.number({
+        errorMap: () => ({ message: "Criminal must be a number" }),
+      })
+    )
+    .min(1, "Criminals is required")
+    .nonempty("Criminals is required"),
 });
 
 export const updateCrimeUniqueSchema = z.object({
@@ -188,19 +193,25 @@ export const updateCrimeUniqueSchema = z.object({
         return false;
       }
     }),
-  criminal: z
-    .number({
-      errorMap: () => ({ message: "Criminal must be a number" }),
-    })
-    .superRefine(async (criminal, ctx) => {
-      const criminalData = await getByCriminalId(criminal);
-      if (!criminalData) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Criminal doen't exists",
-          path: ["criminal"],
-        });
-        return false;
-      }
+  criminals: z
+    .array(
+      z.number({
+        errorMap: () => ({ message: "Criminal must be a number" }),
+      })
+    )
+    .min(1, "Criminals is required")
+    .nonempty("Criminals is required")
+    .superRefine(async (criminals, ctx) => {
+      criminals.forEach(async (criminal) => {
+        const criminalData = await getByCriminalId(criminal);
+        if (!criminalData) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Criminal doen't exists",
+            path: ["criminal"],
+          });
+          return false;
+        }
+      });
     }),
 });
