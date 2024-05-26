@@ -1,31 +1,19 @@
-import { eq, sql } from "drizzle-orm";
-import { InferInsertModel } from "drizzle-orm";
-import db from "../../db";
-import { users } from "../../db/schema/user";
-import { UserType } from "../../@types/user.type";
+import prisma from "../../db";
+import { UserCreateType, UserType } from "../../@types/user.type";
 import { UpdateUserBody } from "./schemas/update.schema";
-import {
-  Descending_User_ID,
-  Search_Query,
-  UserColumn,
-  UserSelect,
-} from "./user.model";
+import { UserColumn } from "./user.model";
 
 /**
  * Create a new user with the provided data.
  *
- * @param {InferInsertModel<typeof users>} data - the data for creating the user
+ * @param {UserCreateType} data - the data for creating the user
  * @return {Promise<UserType>} a promise that resolves to the newly created user
  */
-export async function createUser(
-  data: InferInsertModel<typeof users>
-): Promise<UserType> {
-  const result = await db
-    .insert(users)
-    .values(data)
-    .onConflictDoNothing()
-    .returning(UserSelect);
-  return result[0];
+export async function createUser(data: UserCreateType): Promise<UserType> {
+  return await prisma.user.create({
+    data,
+    select: UserColumn,
+  });
 }
 
 /**
@@ -39,12 +27,10 @@ export async function updateUser(
   data: Omit<UpdateUserBody, "confirm_password">,
   id: number
 ): Promise<UserType> {
-  const result = await db
-    .update(users)
-    .set(data)
-    .where(eq(users.id, id))
-    .returning(UserSelect);
-  return result[0];
+  return await prisma.user.update({
+    where: { id },
+    data: data,
+  });
 }
 
 /**
@@ -59,15 +45,32 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<UserType[]> {
-  const data = await db.query.users.findMany({
-    columns: UserColumn,
-    where: search ? Search_Query(search) : undefined,
-    orderBy: Descending_User_ID,
-    limit,
-    offset,
+  return await prisma.user.findMany({
+    skip: offset,
+    take: limit,
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {},
+    select: UserColumn,
+    orderBy: {
+      id: "desc",
+    },
   });
-
-  return data;
 }
 
 /**
@@ -77,13 +80,30 @@ export async function paginate(
  * @return {Promise<UserType[]>} the paginated user data as a promise
  */
 export async function getAll(search?: string): Promise<UserType[]> {
-  const data = await db.query.users.findMany({
-    columns: UserColumn,
-    where: search ? Search_Query(search) : undefined,
-    orderBy: Descending_User_ID,
+  return await prisma.user.findMany({
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {},
+    select: UserColumn,
+    orderBy: {
+      id: "desc",
+    },
   });
-
-  return data;
 }
 
 /**
@@ -92,14 +112,26 @@ export async function getAll(search?: string): Promise<UserType[]> {
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${users.id}) as int)`,
-    })
-    .from(users)
-    .where(search ? Search_Query(search) : undefined);
-
-  return data[0].count;
+  return await prisma.user.count({
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              email: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {},
+  });
 }
 
 /**
@@ -108,13 +140,11 @@ export async function count(search?: string): Promise<number> {
  * @param {number} id - The ID of the user to retrieve
  * @return {Promise<UserType|null>} The user data if found, otherwise null
  */
-export async function getById(id: number): Promise<UserType | undefined> {
-  const data = await db.query.users.findFirst({
-    columns: UserColumn,
-    where: eq(users.id, id),
-    orderBy: Descending_User_ID,
+export async function getById(id: number): Promise<UserType | null> {
+  return await prisma.user.findFirst({
+    where: { id },
+    select: UserColumn,
   });
-  return data;
 }
 
 /**
@@ -123,13 +153,11 @@ export async function getById(id: number): Promise<UserType | undefined> {
  * @param {string} email - The email of the user to retrieve
  * @return {Promise<UserType | null>} The user information if found, otherwise null
  */
-export async function getByEmail(email: string): Promise<UserType | undefined> {
-  const data = await db.query.users.findFirst({
-    columns: UserColumn,
-    where: eq(users.email, email),
-    orderBy: Descending_User_ID,
+export async function getByEmail(email: string): Promise<UserType | null> {
+  return await prisma.user.findFirst({
+    where: { email },
+    select: UserColumn,
   });
-  return data;
 }
 
 /**
@@ -139,9 +167,8 @@ export async function getByEmail(email: string): Promise<UserType | undefined> {
  * @return {Promise<UserType>} a promise that resolves once the user is removed
  */
 export async function remove(id: number): Promise<UserType> {
-  const result = await db
-    .delete(users)
-    .where(eq(users.id, id))
-    .returning(UserSelect);
-  return result[0];
+  return await prisma.user.delete({
+    where: { id },
+    select: UserColumn,
+  });
 }

@@ -31,6 +31,7 @@ import { accountRoutes } from "../modules/account/account.routes";
 import { uploadRoutes } from "../modules/upload/upload.routes";
 import { criminalRoutes } from "../modules/criminal/criminal.routes";
 import { crimeRoutes } from "../modules/crime/crime.routes";
+import prisma from "../db";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -54,6 +55,8 @@ export async function buildServer() {
       plugins: [require("ajv-errors")],
     },
   });
+
+  await prisma.$connect();
 
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
@@ -114,6 +117,7 @@ export async function buildServer() {
       if (err) {
         server.log.error(err);
       }
+      await prisma.$disconnect();
       await server.close();
     } as closeWithGrace.CloseWithGraceAsyncCallback
   );

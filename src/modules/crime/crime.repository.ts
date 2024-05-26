@@ -1,20 +1,11 @@
-import { eq, sql } from "drizzle-orm";
-import db from "../../db";
-import { crimes } from "../../db/schema/crime";
+import prisma from "../../db";
 import {
   CrimeCreateType,
   CrimeExcelType,
   CrimeQueryType,
   CrimeUpdateType,
 } from "../../@types/crime.type";
-import {
-  CrimeColumn,
-  CrimeSelect,
-  CriminalColumn,
-  Descending_Crime_CreatedAt,
-  Search_Query,
-} from "./crime.model";
-import { crimesByCriminals } from "../../db/schema/crimesByCriminals";
+import { CrimeColumn, CriminalColumn } from "./crime.model";
 
 /**
  * Create a new crime with the provided data.
@@ -24,33 +15,35 @@ import { crimesByCriminals } from "../../db/schema/crimesByCriminals";
  */
 export async function createCrime(
   data: CrimeCreateType & { createdBy: number }
-): Promise<CrimeQueryType | undefined> {
-  const { hsClosingDate, hsOpeningDate, criminals, ...rest } = data;
-  const result = await db.transaction(async (tx) => {
-    try {
-      const res = await db
-        .insert(crimes)
-        .values({
+): Promise<CrimeQueryType | null> {
+  const { hsClosingDate, hsOpeningDate, createdBy, criminals, ...rest } = data;
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      // Code running in a transaction...
+      const crime = await tx.crime.create({
+        data: {
           ...rest,
           hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : undefined,
           hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : undefined,
-        })
-        .onConflictDoNothing()
-        .returning(CrimeSelect);
-      await tx
-        .delete(crimesByCriminals)
-        .where(eq(crimesByCriminals.crimeId, res[0].id));
-      await tx
-        .insert(crimesByCriminals)
-        .values(criminals.map((c) => ({ crimeId: res[0].id, criminalId: c })));
-      return res;
-    } catch (error) {
-      tx.rollback();
-      throw error;
-    }
-  });
-  const crime = await getById(result[0].id);
-  return crime;
+          userId: createdBy,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      await tx.crimesByCriminals.deleteMany({ where: { crimeId: crime.id } });
+      await tx.crimesByCriminals.createMany({
+        data: criminals.map((c) => ({ crimeId: crime.id, criminalId: c })),
+      });
+
+      return crime;
+    });
+
+    return await getById(result.id);
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -63,36 +56,36 @@ export async function createCrime(
 export async function updateCrime(
   data: CrimeUpdateType,
   id: number
-): Promise<CrimeQueryType | undefined> {
+): Promise<CrimeQueryType | null> {
   const { hsClosingDate, hsOpeningDate, criminals, ...rest } = data;
-  const updateData = { ...rest } as CrimeUpdateType;
+  const updateData = { ...rest } as Omit<CrimeUpdateType, "criminals">;
   if (hsClosingDate) {
     updateData.hsClosingDate = new Date(hsClosingDate);
   }
   if (hsOpeningDate) {
     updateData.hsOpeningDate = new Date(hsOpeningDate);
   }
-  await db.transaction(async (tx) => {
-    try {
-      await tx
-        .update(crimes)
-        .set({
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Code running in a transaction...
+      await tx.crime.update({
+        data: {
           ...updateData,
-        })
-        .where(eq(crimes.id, id));
-      await tx
-        .delete(crimesByCriminals)
-        .where(eq(crimesByCriminals.crimeId, id));
-      await tx
-        .insert(crimesByCriminals)
-        .values(criminals.map((c) => ({ crimeId: id, criminalId: c })));
-    } catch (error) {
-      tx.rollback();
-      throw error;
-    }
-  });
-  const crime = await getById(id);
-  return crime;
+        },
+        where: {
+          id,
+        },
+      });
+      await tx.crimesByCriminals.deleteMany({ where: { crimeId: id } });
+      await tx.crimesByCriminals.createMany({
+        data: criminals.map((c) => ({ crimeId: id, criminalId: c })),
+      });
+    });
+
+    return await getById(id);
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -107,24 +100,179 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CrimeQueryType[]> {
-  const data = await db.query.crimes.findMany({
-    columns: CrimeColumn,
-    with: {
+  return await prisma.crime.findMany({
+    skip: offset,
+    take: limit,
+    where: search
+      ? {
+          OR: [
+            {
+              typeOfCrime: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              sectionOfLaw: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mobFileNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              hsNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              aliases: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              ageWhileOpening: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeGroup: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeHead: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeClass: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              briefFact: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              cluesLeft: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              languagesKnown: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              languagesUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeAttacked: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeOfAssemblyAfterOffence: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeOfAssemblyBeforeOffence: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              propertiesAttacked: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              styleAssumed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              toolsUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              tradeMarks: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              transportUsedAfter: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              transportUsedBefore: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              gangStrength: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              criminals: {
+                some: {
+                  criminal: {
+                    name: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {},
+    select: {
+      ...CrimeColumn,
       criminals: {
-        with: {
+        select: {
           criminal: {
-            columns: CriminalColumn,
+            select: CriminalColumn,
           },
         },
       },
     },
-    where: search ? Search_Query(search) : undefined,
-    orderBy: Descending_Crime_CreatedAt,
-    limit,
-    offset,
+    orderBy: {
+      id: "desc",
+    },
   });
-
-  return data;
 }
 
 /**
@@ -134,25 +282,186 @@ export async function paginate(
  * @return {Promise<CrimeType[]>} the paginated crime data as a promise
  */
 export async function getAll(search?: string): Promise<CrimeExcelType[]> {
-  const data = await db.query.crimes.findMany({
-    columns: CrimeColumn,
-    with: {
+  const data = await prisma.crime.findMany({
+    where: search
+      ? {
+          OR: [
+            {
+              typeOfCrime: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              sectionOfLaw: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mobFileNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              hsNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              aliases: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              ageWhileOpening: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeGroup: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeHead: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeClass: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              briefFact: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              cluesLeft: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              languagesKnown: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              languagesUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeAttacked: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeOfAssemblyAfterOffence: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeOfAssemblyBeforeOffence: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              propertiesAttacked: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              styleAssumed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              toolsUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              tradeMarks: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              transportUsedAfter: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              transportUsedBefore: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              gangStrength: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              criminals: {
+                some: {
+                  criminal: {
+                    name: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {},
+    select: {
+      ...CrimeColumn,
       criminals: {
-        with: {
+        select: {
           criminal: {
-            columns: CriminalColumn,
+            select: CriminalColumn,
           },
         },
       },
     },
-    where: search ? Search_Query(search) : undefined,
-    orderBy: Descending_Crime_CreatedAt,
+    orderBy: {
+      id: "desc",
+    },
   });
 
   return data.map((c) => ({
     ...c,
-    criminal_names: c.criminals.map((c) => c.criminal.name).join(", "),
-    criminal_ids: c.criminals.map((c) => c.criminal.id).join(", "),
+    criminal_names: c.criminals
+      .map((c) => (c.criminal ? c.criminal.name : ""))
+      .join(", "),
+    criminal_ids: c.criminals
+      .map((c) => (c.criminal ? c.criminal.id : ""))
+      .join(", "),
   }));
 }
 
@@ -162,14 +471,164 @@ export async function getAll(search?: string): Promise<CrimeExcelType[]> {
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${crimes.id}) as int)`,
-    })
-    .from(crimes)
-    .where(search ? Search_Query(search) : undefined);
-
-  return data[0].count;
+  return await prisma.crime.count({
+    where: search
+      ? {
+          OR: [
+            {
+              typeOfCrime: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              sectionOfLaw: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mobFileNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              hsNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              aliases: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              ageWhileOpening: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeGroup: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeHead: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              crimeClass: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              briefFact: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              cluesLeft: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              languagesKnown: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              languagesUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeAttacked: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeOfAssemblyAfterOffence: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              placeOfAssemblyBeforeOffence: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              propertiesAttacked: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              styleAssumed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              toolsUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              tradeMarks: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              transportUsedAfter: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              transportUsedBefore: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              gangStrength: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              criminals: {
+                some: {
+                  criminal: {
+                    name: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }
+      : {},
+  });
 }
 
 /**
@@ -178,21 +637,22 @@ export async function count(search?: string): Promise<number> {
  * @param {number} id - The ID of the crime to retrieve
  * @return {Promise<CrimeType|null>} The crime data if found, otherwise null
  */
-export async function getById(id: number): Promise<CrimeQueryType | undefined> {
-  const data = await db.query.crimes.findFirst({
-    columns: CrimeColumn,
-    with: {
+export async function getById(id: number): Promise<CrimeQueryType | null> {
+  return prisma.crime.findFirst({
+    where: {
+      id,
+    },
+    select: {
+      ...CrimeColumn,
       criminals: {
-        with: {
+        select: {
           criminal: {
-            columns: CriminalColumn,
+            select: CriminalColumn,
           },
         },
       },
     },
-    where: eq(crimes.id, id),
   });
-  return data;
 }
 
 /**
@@ -202,7 +662,19 @@ export async function getById(id: number): Promise<CrimeQueryType | undefined> {
  * @return {Promise<CrimeType>} a promise that resolves once the crime is removed
  */
 export async function remove(id: number): Promise<CrimeQueryType | undefined> {
-  const crime = await getById(id);
-  await db.delete(crimes).where(eq(crimes.id, id)).returning(CrimeSelect);
-  return crime;
+  return prisma.crime.delete({
+    where: {
+      id,
+    },
+    select: {
+      ...CrimeColumn,
+      criminals: {
+        select: {
+          criminal: {
+            select: CriminalColumn,
+          },
+        },
+      },
+    },
+  });
 }

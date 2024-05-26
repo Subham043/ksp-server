@@ -28,10 +28,6 @@ export type CrimeQueryType = {
   gangStrength?: string | null;
   createdAt?: Date | null;
   criminals: {
-    createdAt: Date | null;
-    criminalId: number;
-    updatedAt: Date | null;
-    crimeId: number;
     criminal: {
       id: number;
       name: string;

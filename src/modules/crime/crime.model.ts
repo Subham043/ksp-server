@@ -1,9 +1,4 @@
-import { desc, eq, ilike, or } from "drizzle-orm";
-import db from "../../db";
-import { crimes } from "../../db/schema/crime";
 import { WorksheetColumnsType } from "../../utils/excel";
-import { criminals } from "../../db/schema/criminal";
-import { crimesByCriminals } from "../../db/schema/crimesByCriminals";
 
 export const ExcelCrimesColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
@@ -46,43 +41,10 @@ export const ExcelCrimesColumns: WorksheetColumnsType = [
   { key: "criminal_names", header: "Criminal Names" },
 ];
 
-export const CriminalSelect = {
-  name: criminals.name,
-};
 export const CriminalColumn = {
   id: true,
   name: true,
 } as const;
-export const CrimeSelect = {
-  id: crimes.id,
-  typeOfCrime: crimes.typeOfCrime,
-  sectionOfLaw: crimes.sectionOfLaw,
-  mobFileNo: crimes.mobFileNo,
-  hsNo: crimes.hsNo,
-  hsOpeningDate: crimes.hsOpeningDate,
-  hsClosingDate: crimes.hsClosingDate,
-  aliases: crimes.aliases,
-  ageWhileOpening: crimes.ageWhileOpening,
-  crimeGroup: crimes.crimeGroup,
-  crimeHead: crimes.crimeHead,
-  crimeClass: crimes.crimeClass,
-  briefFact: crimes.briefFact,
-  cluesLeft: crimes.cluesLeft,
-  languagesKnown: crimes.languagesKnown,
-  languagesUsed: crimes.languagesUsed,
-  placeAttacked: crimes.placeAttacked,
-  placeOfAssemblyAfterOffence: crimes.placeOfAssemblyAfterOffence,
-  placeOfAssemblyBeforeOffence: crimes.placeOfAssemblyBeforeOffence,
-  propertiesAttacked: crimes.propertiesAttacked,
-  styleAssumed: crimes.styleAssumed,
-  toolsUsed: crimes.toolsUsed,
-  tradeMarks: crimes.tradeMarks,
-  transportUsedAfter: crimes.transportUsedAfter,
-  transportUsedBefore: crimes.transportUsedBefore,
-  gang: crimes.gang,
-  gangStrength: crimes.gangStrength,
-  createdAt: crimes.createdAt,
-};
 
 export const CrimeColumn = {
   id: true,
@@ -114,45 +76,3 @@ export const CrimeColumn = {
   gangStrength: true,
   createdAt: true,
 } as const;
-
-export const MasterSelect = {
-  ...CrimeSelect,
-  ...CriminalSelect,
-};
-
-export const Descending_Crime_CreatedAt = desc(crimes.createdAt);
-
-export const Select_Master_Query = db
-  .select(MasterSelect)
-  .from(crimes)
-  .leftJoin(crimesByCriminals, eq(crimes.id, crimesByCriminals.crimeId))
-  .leftJoin(criminals, eq(criminals.id, crimesByCriminals.criminalId));
-
-export const Search_Query = (search: string) =>
-  or(
-    ilike(crimes.typeOfCrime, `%${search}%`),
-    ilike(crimes.sectionOfLaw, `%${search}%`),
-    ilike(crimes.mobFileNo, `%${search}%`),
-    ilike(crimes.hsNo, `%${search}%`),
-    ilike(crimes.aliases, `%${search}%`),
-    ilike(crimes.ageWhileOpening, `%${search}%`),
-    ilike(crimes.crimeGroup, `%${search}%`),
-    ilike(crimes.crimeHead, `%${search}%`),
-    ilike(crimes.crimeClass, `%${search}%`),
-    ilike(crimes.briefFact, `%${search}%`),
-    ilike(crimes.cluesLeft, `%${search}%`),
-    ilike(crimes.languagesKnown, `%${search}%`),
-    ilike(crimes.languagesUsed, `%${search}%`),
-    ilike(crimes.placeAttacked, `%${search}%`),
-    ilike(crimes.placeOfAssemblyAfterOffence, `%${search}%`),
-    ilike(crimes.placeOfAssemblyBeforeOffence, `%${search}%`),
-    ilike(crimes.propertiesAttacked, `%${search}%`),
-    ilike(crimes.styleAssumed, `%${search}%`),
-    ilike(crimes.toolsUsed, `%${search}%`),
-    ilike(crimes.tradeMarks, `%${search}%`),
-    ilike(crimes.transportUsedAfter, `%${search}%`),
-    ilike(crimes.transportUsedBefore, `%${search}%`)
-  );
-
-export const Search_Criminal_Query = (search: string) =>
-  ilike(criminals.name, `%${search}%`);

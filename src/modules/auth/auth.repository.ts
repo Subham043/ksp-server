@@ -1,79 +1,93 @@
-import { InferInsertModel, and, eq } from "drizzle-orm";
 import { UserType } from "../../@types/user.type";
-import db from "../../db";
-import { users } from "../../db/schema/user";
+import prisma from "../../db";
 import { ForgotPasswordBody } from "./schemas/forgot_password.schema";
-import { tokens } from "../../db/schema/token";
-import { AuthColumn, AuthTokenSelect } from "./auth.model";
+import { AuthColumn, AuthTokenColumn } from "./auth.model";
+import { Prisma } from "@prisma/client";
 
 export async function getByEmail(
   email: string
-): Promise<(UserType & { password: string }) | undefined> {
-  const data = await db.query.users.findFirst({
-    columns: AuthColumn,
-    where: eq(users.email, email),
+): Promise<(UserType & { password: string }) | null> {
+  return await prisma.user.findFirst({
+    where: { email },
+    select: AuthColumn,
   });
-  return data;
 }
 
 export async function forgotPassword(
   data: ForgotPasswordBody & { key: string }
 ): Promise<void> {
-  await db
-    .update(users)
-    .set({
+  await prisma.user.update({
+    where: { email: data.email },
+    data: {
       key: data.key,
-    })
-    .where(eq(users.email, data.email));
+    },
+  });
 }
 
-export async function getByKey(
-  key: string
-): Promise<{ id: number } | undefined> {
-  const data = await db.query.users.findFirst({
-    columns: {
+export async function getByKey(key: string): Promise<{ id: number } | null> {
+  return await prisma.user.findFirst({
+    where: { key },
+    select: {
       id: true,
     },
-    where: eq(users.key, key),
   });
-  return data;
 }
 
 export async function resetPassword(
   data: { password: string; key: string },
   id: number
 ): Promise<void> {
-  await db.update(users).set(data).where(eq(users.id, id));
+  await prisma.user.update({
+    where: { id },
+    data,
+  });
 }
 
 export async function insertToken(
-  data: InferInsertModel<typeof tokens>
+  data: Prisma.Args<typeof prisma.token, "create">["data"]
 ): Promise<void> {
-  await db.insert(tokens).values(data).onConflictDoNothing();
+  await prisma.token.create({
+    data,
+  });
 }
 
 export async function getToken(data: {
   token: string;
   userId: number;
 }): Promise<{ id: number; token: string }[]> {
-  const result = await db.query.tokens.findMany({
-    columns: {
+  return await prisma.token.findMany({
+    select: {
       id: true,
       token: true,
       createdAt: true,
     },
-    where: and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)),
+    where: {
+      token: data.token,
+      userId: data.userId,
+    },
   });
-  return result;
 }
 
 export async function deleteToken(data: {
   token: string;
   userId: number;
-}): Promise<{ id: number; token: string; createdAt: Date | null }> {
-  const result = await db
-    .delete(tokens)
-    .where(and(eq(tokens.token, data.token), eq(tokens.userId, data.userId)))
-    .returning(AuthTokenSelect);
-  return result[0];
+}): Promise<{ id: number; token: string; createdAt: Date | null } | null> {
+  const result = await prisma.token.findFirst({
+    select: AuthTokenColumn,
+    where: {
+      token: data.token,
+      userId: data.userId,
+    },
+  });
+  if (result !== null) {
+    return await prisma.token.delete({
+      select: AuthTokenColumn,
+      where: {
+        id: result.id,
+        token: data.token,
+        userId: data.userId,
+      },
+    });
+  }
+  return result;
 }

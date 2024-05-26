@@ -46,14 +46,18 @@ export type CriminalOmitType = Omit<
   CriminalType,
   "id" | "createdAt" | "aadhar_photo" | "photo"
 >;
-export interface CriminalCreateType extends CriminalOmitType {
+export interface CriminalCreateType
+  extends Omit<CriminalOmitType, "relation_type"> {
   aadhar_photo?: MultipartFile | null | undefined;
   photo?: MultipartFile | null | undefined;
+  relation_type?: "Father" | "Husband" | "Mother" | "Wife" | undefined;
 }
 
 export interface CriminalUpdateType extends CriminalCreateType {}
 
-export interface CriminalPostRepositoryType extends CriminalOmitType {
+export interface CriminalPostRepositoryType
+  extends Omit<CriminalOmitType, "relation_type"> {
   aadhar_photo?: string | null | undefined;
   photo?: string | null | undefined;
+  relation_type?: "Father" | "Husband" | "Mother" | "Wife" | undefined;
 }

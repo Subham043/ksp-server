@@ -1,16 +1,9 @@
-import { eq, sql } from "drizzle-orm";
-import db from "../../db";
-import { criminals } from "../../db/schema/criminal";
+import prisma from "../../db";
 import {
   CriminalPostRepositoryType,
   CriminalType,
 } from "../../@types/criminal.type";
-import {
-  CriminalColumn,
-  CriminalSelect,
-  Descending_Criminal_CreatedAt,
-  Search_Query,
-} from "./criminal.model";
+import { CriminalColumn } from "./criminal.model";
 
 /**
  * Create a new criminal with the provided data.
@@ -21,16 +14,11 @@ import {
 export async function createCriminal(
   data: CriminalPostRepositoryType & { createdBy: number }
 ): Promise<CriminalType> {
-  const { dob, ...rest } = data;
-  const result = await db
-    .insert(criminals)
-    .values({
-      ...rest,
-      dob: dob ? new Date(dob) : undefined,
-    })
-    .onConflictDoNothing()
-    .returning(CriminalSelect);
-  return result[0];
+  const { dob, createdBy, ...rest } = data;
+  return await prisma.criminal.create({
+    data: { ...rest, dob: dob ? new Date(dob) : undefined, userId: createdBy },
+    select: CriminalColumn,
+  });
 }
 
 /**
@@ -49,14 +37,11 @@ export async function updateCriminal(
   if (dob) {
     updateData.dob = new Date(dob);
   }
-  const result = await db
-    .update(criminals)
-    .set({
-      ...updateData,
-    })
-    .where(eq(criminals.id, id))
-    .returning(CriminalSelect);
-  return result[0];
+  return await prisma.criminal.update({
+    where: { id },
+    data: { ...updateData },
+    select: CriminalColumn,
+  });
 }
 
 /**
@@ -71,15 +56,212 @@ export async function paginate(
   offset: number,
   search?: string
 ): Promise<CriminalType[]> {
-  const data = await db.query.criminals.findMany({
-    columns: CriminalColumn,
-    where: search ? Search_Query(search) : undefined,
-    orderBy: Descending_Criminal_CreatedAt,
-    limit,
-    offset,
+  return await prisma.criminal.findMany({
+    skip: offset,
+    take: limit,
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              permanent_address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              present_address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              phone: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              aadhar_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              relation_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              caste: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              fpb_sl_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              fpb_classn_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              occupation: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              educational_qualification: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              native_ps: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              native_district: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              voice: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              build: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              complexion: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              teeth: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              hair: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              eyes: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              habbits: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              burnMarks: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              tattoo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mole: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              scar: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              leucoderma: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              faceHead: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              otherPartsBody: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              dressUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              beard: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              face: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              moustache: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              nose: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {},
+    select: CriminalColumn,
+    orderBy: {
+      id: "desc",
+    },
   });
-
-  return data;
 }
 
 /**
@@ -89,13 +271,210 @@ export async function paginate(
  * @return {Promise<CriminalType[]>} the paginated criminal data as a promise
  */
 export async function getAll(search?: string): Promise<CriminalType[]> {
-  const data = await db.query.criminals.findMany({
-    columns: CriminalColumn,
-    where: search ? Search_Query(search) : undefined,
-    orderBy: Descending_Criminal_CreatedAt,
+  return await prisma.criminal.findMany({
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              permanent_address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              present_address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              phone: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              aadhar_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              relation_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              caste: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              fpb_sl_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              fpb_classn_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              occupation: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              educational_qualification: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              native_ps: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              native_district: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              voice: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              build: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              complexion: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              teeth: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              hair: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              eyes: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              habbits: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              burnMarks: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              tattoo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mole: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              scar: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              leucoderma: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              faceHead: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              otherPartsBody: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              dressUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              beard: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              face: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              moustache: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              nose: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {},
+    select: CriminalColumn,
+    orderBy: {
+      id: "desc",
+    },
   });
-
-  return data;
 }
 
 /**
@@ -104,14 +483,206 @@ export async function getAll(search?: string): Promise<CriminalType[]> {
  * @return {Promise<number>} The number of records.
  */
 export async function count(search?: string): Promise<number> {
-  const data = await db
-    .select({
-      count: sql<number>`cast(count(${criminals.id}) as int)`,
-    })
-    .from(criminals)
-    .where(search ? Search_Query(search) : undefined);
-
-  return data[0].count;
+  return await prisma.criminal.count({
+    where: search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              permanent_address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              present_address: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              phone: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              aadhar_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              relation_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              caste: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              fpb_sl_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              fpb_classn_no: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              occupation: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              educational_qualification: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              native_ps: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              native_district: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              voice: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              build: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              complexion: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              teeth: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              hair: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              eyes: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              habbits: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              burnMarks: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              tattoo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mole: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              scar: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              leucoderma: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              faceHead: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              otherPartsBody: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              dressUsed: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              beard: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              face: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              moustache: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              nose: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        }
+      : {},
+  });
 }
 
 /**
@@ -120,13 +691,11 @@ export async function count(search?: string): Promise<number> {
  * @param {number} id - The ID of the criminal to retrieve
  * @return {Promise<CriminalType|null>} The criminal data if found, otherwise null
  */
-export async function getById(id: number): Promise<CriminalType | undefined> {
-  const data = await db.query.criminals.findFirst({
-    columns: CriminalColumn,
-    where: eq(criminals.id, id),
+export async function getById(id: number): Promise<CriminalType | null> {
+  return await prisma.criminal.findFirst({
+    where: { id },
+    select: CriminalColumn,
   });
-
-  return data;
 }
 
 /**
@@ -137,19 +706,17 @@ export async function getById(id: number): Promise<CriminalType | undefined> {
  */
 export async function getByAadhar(
   aadhar_no: string
-): Promise<CriminalType | undefined> {
-  const data = await db.query.criminals.findFirst({
-    columns: {
+): Promise<CriminalType | null> {
+  return await prisma.criminal.findFirst({
+    where: { aadhar_no },
+    select: {
       id: true,
       name: true,
       sex: true,
       aadhar_no: true,
       createdAt: true,
     },
-    where: eq(criminals.aadhar_no, aadhar_no),
   });
-
-  return data;
 }
 
 /**
@@ -159,9 +726,8 @@ export async function getByAadhar(
  * @return {Promise<CriminalType>} a promise that resolves once the criminal is removed
  */
 export async function remove(id: number): Promise<CriminalType> {
-  const result = await db
-    .delete(criminals)
-    .where(eq(criminals.id, id))
-    .returning(CriminalSelect);
-  return result[0];
+  return await prisma.criminal.delete({
+    where: { id },
+    select: CriminalColumn,
+  });
 }

@@ -31,7 +31,7 @@ import { ExcelCrimesColumns } from "./crime.model";
 export async function create(
   data: CrimeCreateType,
   userId: number
-): Promise<CrimeQueryType | undefined> {
+): Promise<CrimeQueryType | null> {
   return await createCrime({
     ...data,
     createdBy: userId,
@@ -48,7 +48,7 @@ export async function create(
 export async function update(
   data: CrimeUpdateType,
   param: GetIdParam
-): Promise<CrimeQueryType | undefined> {
+): Promise<CrimeQueryType | null> {
   return await updateCrime({ ...data }, param.id);
 }
 
