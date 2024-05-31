@@ -115,6 +115,8 @@ model Criminal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   crimes CrimesByCriminals[]
+  courtDetails CourtDetail[]
+  jailDetails JailDetail[]
 
   @@unique([id, aadhar_no], map: "idx_aadhar_criminalkey")
 }
@@ -152,6 +154,8 @@ model Crime {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   criminals CrimesByCriminals[]
+  courtDetails CourtDetail[]
+  jailDetails JailDetail[]
 }
 
 model CrimesByCriminals {
@@ -164,4 +168,44 @@ model CrimesByCriminals {
 
   @@id([crimeId, criminalId])
   @@unique([crimeId, criminalId], map: "idx_criminal_crimekey")
+}
+
+model CourtDetail {
+  id        Int      @id @default(autoincrement())
+  courtName      String  @db.VarChar(256)
+  ccScNo      String?  @db.VarChar(256)
+  psName      String?  @db.VarChar(256)
+  hearingDate     DateTime?
+  nextHearingDate     DateTime?
+  attendance      String?  @db.VarChar(256)
+  lawyerName      String?  @db.VarChar(256)
+  lawyerContact      String?  @db.VarChar(256)
+  suretyProviderDetail      String?  @db.VarChar(256)
+  suretyProviderContact      String?  @db.VarChar(256)
+  stageOfCase      String?  @db.VarChar(256)
+  additionalRemarks     String?   @db.Text
+  accused   Criminal? @relation(fields: [criminalId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  criminalId Int?
+  crime   Crime? @relation(fields: [crimeId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  crimeId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+model JailDetail {
+  id        Int      @id @default(autoincrement())
+  lawSection      String?  @db.VarChar(256)
+  policeStation      String?  @db.VarChar(256)
+  jailEntryDate     DateTime?
+  jailReleaseDate     DateTime?
+  utpNo      String?  @db.VarChar(256)
+  jailVisitorDetail      String?  @db.VarChar(256)
+  visitorRelationship      String?  @db.VarChar(256)
+  additionalRemarks     String?   @db.Text
+  accused   Criminal? @relation(fields: [criminalId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  criminalId Int?
+  crime   Crime? @relation(fields: [crimeId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  crimeId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }

@@ -23,10 +23,10 @@ export const createCriminalBodySchema = z.object({
   }),
   dob: z
     .string({
-      errorMap: () => ({ message: "Date of Birth Change must be a string" }),
+      errorMap: () => ({ message: "Date of Birth must be a string" }),
     })
     .datetime({
-      message: "Date of Birth Change must be a valid date",
+      message: "Date of Birth must be a valid date",
     })
     .trim()
     .optional(),
@@ -44,9 +44,9 @@ export const createCriminalBodySchema = z.object({
     .optional(),
   phone: z
     .string({
-      errorMap: () => ({ message: "ID must be a number" }),
+      errorMap: () => ({ message: "Phone must be a number" }),
     })
-    .regex(/^\d+$/, { message: "ID must be a number" })
+    .regex(/^\d+$/, { message: "Phone must be a number" })
     .transform((value) => parseInt(value))
     .optional(),
   aadhar_no: z

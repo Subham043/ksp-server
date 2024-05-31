@@ -26,7 +26,7 @@ export const createCrimeBodySchema = z.object({
     .trim(),
   aliases: z
     .string({
-      errorMap: () => ({ message: "Type of Crime must be a string" }),
+      errorMap: () => ({ message: "Aliases must be a string" }),
     })
     .trim()
     .optional(),
