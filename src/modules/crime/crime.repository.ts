@@ -655,6 +655,24 @@ export async function getById(id: number): Promise<CrimeQueryType | null> {
   });
 }
 
+export async function getByIdForPdf(
+  id: number
+): Promise<CrimeQueryType | null> {
+  return prisma.crime.findFirst({
+    where: {
+      id,
+    },
+    select: {
+      ...CrimeColumn,
+      criminals: {
+        select: {
+          criminal: true,
+        },
+      },
+    },
+  });
+}
+
 /**
  * Removes a crime from the database by their ID.
  *

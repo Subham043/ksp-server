@@ -43,3 +43,18 @@ export async function sendImageStream(
     throw new NotFoundError("File not found");
   }
 }
+
+export async function sendLogoStream(
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> {
+  try {
+    const filePath = path.resolve(__dirname, "../../../public/logo.png");
+    const fileStream = fs.createReadStream(filePath);
+    return reply
+      .header("Content-Disposition", 'attachment; filename="logo.png"')
+      .send(fileStream);
+  } catch (error) {
+    throw new NotFoundError("File not found");
+  }
+}

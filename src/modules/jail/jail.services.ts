@@ -19,7 +19,7 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelJailsColumns } from "./jail.model";
+import { ExcelJailsColumns, JailExportType } from "./jail.model";
 
 /**
  * Create a new jail with the provided jail information.
@@ -100,11 +100,23 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
   file: ExcelBuffer;
 }> {
   const jails = await getAll(querystring.search);
+  const data = jails.map((jail) => {
+    return {
+      ...jail,
+      accused_name: jail.accused?.name ?? null,
+      crime_typeOfCrime: jail.crime?.typeOfCrime ?? null,
+      crime_sectionOfLaw: jail.crime?.sectionOfLaw ?? null,
+      crime_mobFileNo: jail.crime?.mobFileNo,
+      crime_hsNo: jail.crime?.hsNo,
+      crime_hsOpeningDate: jail.crime?.hsOpeningDate,
+      crime_hsClosingDate: jail.crime?.hsClosingDate,
+    };
+  });
 
-  const buffer = await generateExcel<JailType>(
+  const buffer = await generateExcel<JailExportType>(
     "Jails",
     ExcelJailsColumns,
-    jails
+    data
   );
 
   return {

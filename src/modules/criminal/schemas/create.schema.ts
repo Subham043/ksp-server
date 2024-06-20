@@ -47,7 +47,6 @@ export const createCriminalBodySchema = z.object({
       errorMap: () => ({ message: "Phone must be a number" }),
     })
     .regex(/^\d+$/, { message: "Phone must be a number" })
-    .transform((value) => parseInt(value))
     .optional(),
   aadhar_no: z
     .string({

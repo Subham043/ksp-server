@@ -3,6 +3,7 @@ import {
   createCrime,
   getAll,
   getById,
+  getByIdForPdf,
   paginate,
   remove,
   updateCrime,
@@ -62,6 +63,18 @@ export async function findById(params: GetIdParam): Promise<CrimeQueryType> {
   const { id } = params;
 
   const crime = await getById(id);
+  if (!crime) {
+    throw new NotFoundError();
+  }
+  return crime;
+}
+
+export async function findByIdForPdf(
+  params: GetIdParam
+): Promise<CrimeQueryType> {
+  const { id } = params;
+
+  const crime = await getByIdForPdf(id);
   if (!crime) {
     throw new NotFoundError();
   }

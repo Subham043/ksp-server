@@ -8,6 +8,7 @@ import auth from "@fastify/auth";
 import multipartFileUpload from "fastify-file-upload";
 import mailer from "fastify-mailer";
 import fastifyRequestLogger from "@mgcrea/fastify-request-logger";
+import fastifyView from "@fastify/view";
 import { logger } from "./logger";
 import { corsOptions } from "../constants/corsOptions";
 import { helmetOptions } from "../constants/helmetOptions";
@@ -34,6 +35,8 @@ import { crimeRoutes } from "../modules/crime/crime.routes";
 import prisma from "../db";
 import { courtRoutes } from "../modules/court/court.routes";
 import { jailRoutes } from "../modules/jail/jail.routes";
+import { pdfRoutes } from "../modules/pdf/pdf.routes";
+import { dashboardRoutes } from "../modules/dashboard/dashboard.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -104,6 +107,13 @@ export async function buildServer() {
     saltWorkFactor: 12,
   });
 
+  await server.register(fastifyView, {
+    engine: {
+      ejs: require("ejs"),
+    },
+    production: false,
+  });
+
   await server.register(authRoutes, { prefix: "/api/auth" });
   await server.register(userRoutes, { prefix: "/api/users" });
   await server.register(criminalRoutes, { prefix: "/api/criminals" });
@@ -112,6 +122,8 @@ export async function buildServer() {
   await server.register(jailRoutes, { prefix: "/api/jails" });
   await server.register(accountRoutes, { prefix: "/api/account" });
   await server.register(uploadRoutes, { prefix: "/api/upload" });
+  await server.register(pdfRoutes, { prefix: "/api/pdf" });
+  await server.register(dashboardRoutes, { prefix: "/api/dashboard" });
 
   // delay is the number of milliseconds for the graceful close to finish
   const closeListeners = closeWithGrace(

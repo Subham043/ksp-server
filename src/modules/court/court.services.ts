@@ -19,7 +19,7 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelCourtsColumns } from "./court.model";
+import { CourtExcelType, ExcelCourtsColumns } from "./court.model";
 
 /**
  * Create a new court with the provided court information.
@@ -100,11 +100,23 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
   file: ExcelBuffer;
 }> {
   const courts = await getAll(querystring.search);
+  const data = courts.map((court) => {
+    return {
+      ...court,
+      accused_name: court.accused?.name ?? null,
+      crime_typeOfCrime: court.crime?.typeOfCrime ?? null,
+      crime_sectionOfLaw: court.crime?.sectionOfLaw ?? null,
+      crime_mobFileNo: court.crime?.mobFileNo,
+      crime_hsNo: court.crime?.hsNo,
+      crime_hsOpeningDate: court.crime?.hsOpeningDate,
+      crime_hsClosingDate: court.crime?.hsClosingDate,
+    };
+  });
 
-  const buffer = await generateExcel<CourtType>(
+  const buffer = await generateExcel<CourtExcelType>(
     "Courts",
     ExcelCourtsColumns,
-    courts
+    data
   );
 
   return {
