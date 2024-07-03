@@ -29,13 +29,6 @@ enum Gender {
   Others
 }
 
-enum RelationType {
-  Father
-  Husband
-  Mother
-  Wife
-}
-
 enum IsGang {
   Yes
   No
@@ -82,8 +75,10 @@ model Criminal {
   aadhar_no      String? @db.VarChar(256)
   aadhar_photo      String? @db.VarChar(256)
   photo      String? @db.VarChar(256)
-  relation_name      String? @db.VarChar(256)
-  relation_type      RelationType @default(Father)
+  father_name      String? @db.VarChar(256)
+  mother_name      String? @db.VarChar(256)
+  spouse_name      String? @db.VarChar(256)
+  religion      String? @db.VarChar(256)
   caste      String? @db.VarChar(256)
   fpb_sl_no      String? @db.VarChar(256)
   fpb_classn_no      String? @db.VarChar(256)

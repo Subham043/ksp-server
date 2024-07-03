@@ -93,7 +93,25 @@ export async function paginate(
               },
             },
             {
-              relation_name: {
+              father_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mother_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              spouse_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              religion: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -306,7 +324,25 @@ export async function getAll(search?: string): Promise<CriminalType[]> {
               },
             },
             {
-              relation_name: {
+              father_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mother_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              spouse_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              religion: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -518,7 +554,25 @@ export async function count(search?: string): Promise<number> {
               },
             },
             {
-              relation_name: {
+              father_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              mother_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              spouse_name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              religion: {
                 contains: search,
                 mode: "insensitive",
               },

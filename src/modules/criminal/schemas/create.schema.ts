@@ -55,19 +55,33 @@ export const createCriminalBodySchema = z.object({
     .max(256, { message: "Aadhar number must be less than 256 characters" })
     .trim()
     .optional(),
-  relation_name: z
+  father_name: z
     .string({
-      errorMap: () => ({ message: "Relation Name must be a string" }),
+      errorMap: () => ({ message: "Father Name must be a string" }),
     })
-    .max(256, { message: "Relation Name must be less than 256 characters" })
+    .max(256, { message: "Father Name must be less than 256 characters" })
     .trim()
     .optional(),
-  relation_type: z
-    .enum(["Father", "Husband", "Mother", "Wife"], {
-      errorMap: () => ({
-        message: "Relation Type must be one of [Father, Husband, Mother, Wife]",
-      }),
+  mother_name: z
+    .string({
+      errorMap: () => ({ message: "Mother Name must be a string" }),
     })
+    .max(256, { message: "Mother Name must be less than 256 characters" })
+    .trim()
+    .optional(),
+  spouse_name: z
+    .string({
+      errorMap: () => ({ message: "Spouse Name must be a string" }),
+    })
+    .max(256, { message: "Spouse Name must be less than 256 characters" })
+    .trim()
+    .optional(),
+  religion: z
+    .string({
+      errorMap: () => ({ message: "Religion must be a string" }),
+    })
+    .max(256, { message: "Religion must be less than 256 characters" })
+    .trim()
     .optional(),
   caste: z
     .string({

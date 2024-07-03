@@ -11,8 +11,10 @@ export type CriminalType = {
   aadhar_no?: string | null | undefined;
   aadhar_photo?: string | null | undefined;
   photo?: string | null | undefined;
-  relation_name?: string | null | undefined;
-  relation_type?: "Father" | "Husband" | "Mother" | "Wife" | null | undefined;
+  father_name?: string | null | undefined;
+  mother_name?: string | null | undefined;
+  spouse_name?: string | null | undefined;
+  religion?: string | null | undefined;
   caste?: string | null | undefined;
   fpb_sl_no?: string | null | undefined;
   fpb_classn_no?: string | null | undefined;
@@ -46,18 +48,14 @@ export type CriminalOmitType = Omit<
   CriminalType,
   "id" | "createdAt" | "aadhar_photo" | "photo"
 >;
-export interface CriminalCreateType
-  extends Omit<CriminalOmitType, "relation_type"> {
+export interface CriminalCreateType extends CriminalOmitType {
   aadhar_photo?: MultipartFile | null | undefined;
   photo?: MultipartFile | null | undefined;
-  relation_type?: "Father" | "Husband" | "Mother" | "Wife" | undefined;
 }
 
 export interface CriminalUpdateType extends CriminalCreateType {}
 
-export interface CriminalPostRepositoryType
-  extends Omit<CriminalOmitType, "relation_type"> {
+export interface CriminalPostRepositoryType extends CriminalOmitType {
   aadhar_photo?: string | null | undefined;
   photo?: string | null | undefined;
-  relation_type?: "Father" | "Husband" | "Mother" | "Wife" | undefined;
 }
