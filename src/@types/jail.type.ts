@@ -2,11 +2,18 @@ export type JailType = {
   id: number;
   lawSection?: string | null | undefined;
   policeStation?: string | null | undefined;
+  jailName?: string | null | undefined;
+  jailId?: string | null | undefined;
+  prisonerId?: string | null | undefined;
+  prisonerType?: string | null | undefined;
+  ward?: string | null | undefined;
+  barrack?: string | null | undefined;
+  registerNo?: string | null | undefined;
+  periodUndergone?: string | null | undefined;
+  firstAdmissionDate?: Date | null;
   jailEntryDate?: Date | null;
   jailReleaseDate?: Date | null;
   utpNo?: string | null | undefined;
-  jailVisitorDetail?: string | null | undefined;
-  visitorRelationship?: string | null | undefined;
   additionalRemarks?: string | null | undefined;
   criminalId?: number | null | undefined;
   accused: {

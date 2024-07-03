@@ -5,12 +5,7 @@ export const ExcelCourtsColumns: WorksheetColumnsType = [
   { key: "courtName", header: "Court Name" },
   { key: "ccScNo", header: "cc/sc No" },
   { key: "psName", header: "ps Name" },
-  {
-    key: "hearingDate",
-    header: "Hearing Date",
-  },
-  { key: "nextHearingDate", header: "Next Hearing Date" },
-  { key: "attendance", header: "Attendance" },
+  { key: "firNo", header: "FIR No." },
   { key: "lawyerName", header: "Lawyer Name" },
   { key: "lawyerContact", header: "Lawyer Contact" },
   { key: "suretyProviderDetail", header: "Surety Provider Detail" },
@@ -33,9 +28,7 @@ export type CourtExcelType = {
   courtName: string;
   ccScNo?: string | null | undefined;
   psName?: string | null | undefined;
-  hearingDate?: Date | null;
-  nextHearingDate?: Date | null;
-  attendance?: string | null | undefined;
+  firNo?: string | null | undefined;
   lawyerName?: string | null | undefined;
   lawyerContact?: string | null | undefined;
   suretyProviderDetail?: string | null | undefined;
@@ -72,9 +65,7 @@ export const CourtColumn = {
   courtName: true,
   ccScNo: true,
   psName: true,
-  hearingDate: true,
-  nextHearingDate: true,
-  attendance: true,
+  firNo: true,
   lawyerName: true,
   lawyerContact: true,
   suretyProviderDetail: true,

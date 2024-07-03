@@ -13,13 +13,8 @@ import { AccusedColumn, CourtColumn, CrimeColumn } from "./court.model";
  * @return {Promise<CourtType>} a promise that resolves to the newly created court
  */
 export async function createCourt(data: CourtCreateType): Promise<CourtType> {
-  const { hearingDate, nextHearingDate, ...rest } = data;
   return await prisma.courtDetail.create({
-    data: {
-      ...rest,
-      hearingDate: hearingDate ? new Date(hearingDate) : undefined,
-      nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : undefined,
-    },
+    data,
     select: {
       ...CourtColumn,
       accused: {
@@ -43,17 +38,9 @@ export async function updateCourt(
   data: CourtUpdateType,
   id: number
 ): Promise<CourtType> {
-  const { hearingDate, nextHearingDate, ...rest } = data;
-  const updateData = { ...rest } as CourtUpdateType;
-  if (hearingDate) {
-    updateData.hearingDate = new Date(hearingDate);
-  }
-  if (nextHearingDate) {
-    updateData.nextHearingDate = new Date(nextHearingDate);
-  }
   return await prisma.courtDetail.update({
     where: { id },
-    data: { ...updateData },
+    data,
     select: {
       ...CourtColumn,
       accused: {
@@ -103,7 +90,7 @@ export async function paginate(
               },
             },
             {
-              attendance: {
+              firNo: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -232,7 +219,7 @@ export async function getAll(search?: string): Promise<CourtType[]> {
               },
             },
             {
-              attendance: {
+              firNo: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -360,7 +347,7 @@ export async function count(search?: string): Promise<number> {
               },
             },
             {
-              attendance: {
+              firNo: {
                 contains: search,
                 mode: "insensitive",
               },

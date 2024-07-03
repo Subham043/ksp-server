@@ -103,13 +103,49 @@ export async function paginate(
               },
             },
             {
-              jailVisitorDetail: {
+              jailName: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              visitorRelationship: {
+              jailId: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              prisonerId: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              prisonerType: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              ward: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              barrack: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              registerNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              periodUndergone: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -208,13 +244,49 @@ export async function getAll(search?: string): Promise<JailType[]> {
               },
             },
             {
-              jailVisitorDetail: {
+              jailName: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              visitorRelationship: {
+              jailId: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              prisonerId: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              prisonerType: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              ward: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              barrack: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              registerNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              periodUndergone: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -312,13 +384,49 @@ export async function count(search?: string): Promise<number> {
               },
             },
             {
-              jailVisitorDetail: {
+              jailName: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              visitorRelationship: {
+              jailId: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              prisonerId: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              prisonerType: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              ward: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              barrack: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              registerNo: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              periodUndergone: {
                 contains: search,
                 mode: "insensitive",
               },

@@ -170,9 +170,7 @@ model CourtDetail {
   courtName      String  @db.VarChar(256)
   ccScNo      String?  @db.VarChar(256)
   psName      String?  @db.VarChar(256)
-  hearingDate     DateTime?
-  nextHearingDate     DateTime?
-  attendance      String?  @db.VarChar(256)
+  firNo      String?  @db.VarChar(256)
   lawyerName      String?  @db.VarChar(256)
   lawyerContact      String?  @db.VarChar(256)
   suretyProviderDetail      String?  @db.VarChar(256)
@@ -185,22 +183,57 @@ model CourtDetail {
   crimeId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
+  courtHearing CourtHearingDetail[]
+}
+
+model CourtHearingDetail {
+  id        Int      @id @default(autoincrement())
+  hearingDate     DateTime?
+  nextHearingDate     DateTime?
+  attendance      String?  @db.VarChar(256)
+  judgeName      String?  @db.VarChar(256)
+  actionCode      String?  @db.VarChar(256)
+  additionalRemarks     String?   @db.Text
+  court   CourtDetail? @relation(fields: [courtId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  courtId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model JailDetail {
   id        Int      @id @default(autoincrement())
   lawSection      String?  @db.VarChar(256)
   policeStation      String?  @db.VarChar(256)
+  jailName      String?  @db.VarChar(256)
+  jailId      String?  @db.VarChar(256)
+  prisonerId      String?  @db.VarChar(256)
+  prisonerType      String?  @db.VarChar(256)
+  ward      String?  @db.VarChar(256)
+  barrack      String?  @db.VarChar(256)
+  registerNo      String?  @db.VarChar(256)
+  periodUndergone      String?  @db.VarChar(256)
+  firstAdmissionDate     DateTime?
   jailEntryDate     DateTime?
   jailReleaseDate     DateTime?
   utpNo      String?  @db.VarChar(256)
-  jailVisitorDetail      String?  @db.VarChar(256)
-  visitorRelationship      String?  @db.VarChar(256)
   additionalRemarks     String?   @db.Text
   accused   Criminal? @relation(fields: [criminalId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   criminalId Int?
   crime   Crime? @relation(fields: [crimeId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   crimeId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  visitors JailVisitorDetail[]
+}
+
+model JailVisitorDetail {
+  id        Int      @id @default(autoincrement())
+  visitonDate     DateTime?
+  name      String?  @db.VarChar(256)
+  relation      String?  @db.VarChar(256)
+  additionalRemarks     String?   @db.Text
+  jail   JailDetail? @relation(fields: [jailId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  jailId Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 }

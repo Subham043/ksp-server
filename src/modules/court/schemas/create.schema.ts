@@ -9,24 +9,6 @@ export const createCourtBodySchema = z.object({
       errorMap: () => ({ message: "Court Name must be a string" }),
     })
     .trim(),
-  hearingDate: z
-    .string({
-      errorMap: () => ({ message: "Hearing Date must be a string" }),
-    })
-    .datetime({
-      message: "Hearing Date must be a valid date",
-    })
-    .trim()
-    .optional(),
-  nextHearingDate: z
-    .string({
-      errorMap: () => ({ message: "Next Hearing Date must be a string" }),
-    })
-    .datetime({
-      message: "Next Hearing Date must be a valid date",
-    })
-    .trim()
-    .optional(),
   ccScNo: z
     .string({
       errorMap: () => ({ message: "CC/SC No. must be a string" }),
@@ -39,11 +21,11 @@ export const createCourtBodySchema = z.object({
     })
     .trim()
     .optional(),
-  attendance: z
+  firNo: z
     .string({
-      errorMap: () => ({ message: "Attendance must be a number" }),
+      errorMap: () => ({ message: "FIR No. must be a string" }),
     })
-    .regex(/^\d+$/, { message: "Attendance must be a number" })
+    .trim()
     .optional(),
   lawyerName: z
     .string({

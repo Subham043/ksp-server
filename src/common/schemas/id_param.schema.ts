@@ -26,6 +26,32 @@ export const getCompanyIdParamSchema = z
 
 export type GetCompanyIdParam = z.infer<typeof getCompanyIdParamSchema>;
 
+export const getJailIdParamSchema = z
+  .object({
+    jailId: z
+      .string({
+        errorMap: () => ({ message: "Jail ID must be a number" }),
+      })
+      .regex(/^\d+$/, { message: "Jail ID must be a number" })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
+export type GetJailIdParam = z.infer<typeof getJailIdParamSchema>;
+
+export const getCourtIdParamSchema = z
+  .object({
+    courtId: z
+      .string({
+        errorMap: () => ({ message: "Court ID must be a number" }),
+      })
+      .regex(/^\d+$/, { message: "Court ID must be a number" })
+      .transform((value) => parseInt(value)),
+  })
+  .required();
+
+export type GetCourtIdParam = z.infer<typeof getCourtIdParamSchema>;
+
 export const getCompanyIdAndIdParamSchema = z
   .object({
     id: z

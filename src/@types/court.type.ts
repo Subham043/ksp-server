@@ -3,9 +3,7 @@ export type CourtType = {
   courtName: string;
   ccScNo?: string | null | undefined;
   psName?: string | null | undefined;
-  hearingDate?: Date | null;
-  nextHearingDate?: Date | null;
-  attendance?: string | null | undefined;
+  firNo?: string | null | undefined;
   lawyerName?: string | null | undefined;
   lawyerContact?: string | null | undefined;
   suretyProviderDetail?: string | null | undefined;

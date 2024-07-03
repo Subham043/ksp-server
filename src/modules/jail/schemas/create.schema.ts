@@ -4,6 +4,15 @@ import { getById as getByCrimeId } from "../../crime/crime.repository";
 import { getById as getByCriminalId } from "../../criminal/criminal.repository";
 
 export const createJailBodySchema = z.object({
+  firstAdmissionDate: z
+    .string({
+      errorMap: () => ({ message: "First Admission Date must be a string" }),
+    })
+    .datetime({
+      message: "First Admission Date must be a valid date",
+    })
+    .trim()
+    .optional(),
   jailEntryDate: z
     .string({
       errorMap: () => ({ message: "Jail Entry Date must be a string" }),
@@ -41,22 +50,60 @@ export const createJailBodySchema = z.object({
     .max(256, { message: "UTP No. must be less than 256 characters" })
     .trim()
     .optional(),
-  jailVisitorDetail: z
+  jailName: z
     .string({
-      errorMap: () => ({ message: "Jail Visitor Detail must be a string" }),
+      errorMap: () => ({ message: "Jail Name must be a string" }),
     })
-    .max(256, {
-      message: "Jail Visitor Detail must be less than 256 characters",
-    })
+    .max(256, { message: "Jail Name must be less than 256 characters" })
     .trim()
     .optional(),
-  visitorRelationship: z
+  jailId: z
     .string({
-      errorMap: () => ({ message: "Visitor Relationship must be a string" }),
+      errorMap: () => ({ message: "Jail Id must be a string" }),
     })
-    .max(256, {
-      message: "Visitor Relationship must be less than 256 characters",
+    .max(256, { message: "Jail Id must be less than 256 characters" })
+    .trim()
+    .optional(),
+  prisonerId: z
+    .string({
+      errorMap: () => ({ message: "Prisoner Id must be a string" }),
     })
+    .max(256, { message: "Prisoner Id must be less than 256 characters" })
+    .trim()
+    .optional(),
+  prisonerType: z
+    .string({
+      errorMap: () => ({ message: "Prisoner Type must be a string" }),
+    })
+    .max(256, { message: "Prisoner Type must be less than 256 characters" })
+    .trim()
+    .optional(),
+  ward: z
+    .string({
+      errorMap: () => ({ message: "Ward must be a string" }),
+    })
+    .max(256, { message: "Ward must be less than 256 characters" })
+    .trim()
+    .optional(),
+  barrack: z
+    .string({
+      errorMap: () => ({ message: "Barrack must be a string" }),
+    })
+    .max(256, { message: "Barrack must be less than 256 characters" })
+    .trim()
+    .optional(),
+  registerNo: z
+    .string({
+      errorMap: () => ({ message: "Register No. must be a string" }),
+    })
+    .max(256, { message: "Register No. must be less than 256 characters" })
+    .trim()
+    .optional(),
+  periodUndergone: z
+    .string({
+      errorMap: () => ({ message: "Period Undergone must be a string" }),
+    })
+    .max(256, { message: "Period Undergone must be less than 256 characters" })
     .trim()
     .optional(),
   additionalRemarks: z
