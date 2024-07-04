@@ -4,10 +4,11 @@ export type CrimeQueryType = {
   sectionOfLaw: string;
   mobFileNo?: string | null;
   hsNo?: string | null;
+  dateOfCrime?: Date | null;
   hsOpeningDate?: Date | null;
   hsClosingDate?: Date | null;
-  aliases?: string | null;
-  ageWhileOpening?: string | null;
+  policeStation?: string | null;
+  firNo?: string | null;
   crimeGroup?: string | null;
   crimeHead?: string | null;
   crimeClass?: string | null;
@@ -41,10 +42,11 @@ export type CrimeType = {
   sectionOfLaw: string;
   mobFileNo?: string | null;
   hsNo?: string | null;
+  dateOfCrime?: Date | null;
   hsOpeningDate?: Date | null;
   hsClosingDate?: Date | null;
-  aliases?: string | null;
-  ageWhileOpening?: string | null;
+  policeStation?: string | null;
+  firNo?: string | null;
   crimeGroup?: string | null;
   crimeHead?: string | null;
   crimeClass?: string | null;
@@ -67,7 +69,7 @@ export type CrimeType = {
   createdAt?: Date | null;
 };
 
-export type CrimeOmitType = Omit<CrimeType, "id" | "createdAt">;
+export type CrimeOmitType = Omit<CrimeType, "id" | "createdAt" | "criminals">;
 export interface CrimeCreateType extends CrimeOmitType {}
 
 export interface CrimeUpdateType extends CrimeCreateType {}

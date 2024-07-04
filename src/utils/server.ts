@@ -39,6 +39,7 @@ import { pdfRoutes } from "../modules/pdf/pdf.routes";
 import { dashboardRoutes } from "../modules/dashboard/dashboard.routes";
 import { visitorRoutes } from "../modules/visitor/visitor.routes";
 import { hearingRoutes } from "../modules/hearing/hearing.routes";
+import { crimesByCriminalsRoutes } from "../modules/crimesByCriminals/crimesByCriminals.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -120,6 +121,9 @@ export async function buildServer() {
   await server.register(userRoutes, { prefix: "/api/users" });
   await server.register(criminalRoutes, { prefix: "/api/criminals" });
   await server.register(crimeRoutes, { prefix: "/api/crimes" });
+  await server.register(crimesByCriminalsRoutes, {
+    prefix: "/api/crimes-by-criminals",
+  });
   await server.register(courtRoutes, { prefix: "/api/courts" });
   await server.register(hearingRoutes, { prefix: "/api/hearings" });
   await server.register(jailRoutes, { prefix: "/api/jails" });

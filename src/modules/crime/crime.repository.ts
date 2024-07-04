@@ -16,34 +16,22 @@ import { CrimeColumn, CriminalColumn } from "./crime.model";
 export async function createCrime(
   data: CrimeCreateType & { createdBy: number }
 ): Promise<CrimeQueryType | null> {
-  const { hsClosingDate, hsOpeningDate, createdBy, criminals, ...rest } = data;
-  try {
-    const result = await prisma.$transaction(async (tx) => {
-      // Code running in a transaction...
-      const crime = await tx.crime.create({
-        data: {
-          ...rest,
-          hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : undefined,
-          hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : undefined,
-          userId: createdBy,
-        },
-        select: {
-          id: true,
-        },
-      });
+  const { hsClosingDate, hsOpeningDate, dateOfCrime, createdBy, ...rest } =
+    data;
+  const result = await prisma.crime.create({
+    data: {
+      ...rest,
+      dateOfCrime: dateOfCrime ? new Date(dateOfCrime) : undefined,
+      hsClosingDate: hsClosingDate ? new Date(hsClosingDate) : undefined,
+      hsOpeningDate: hsOpeningDate ? new Date(hsOpeningDate) : undefined,
+      userId: createdBy,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-      await tx.crimesByCriminals.deleteMany({ where: { crimeId: crime.id } });
-      await tx.crimesByCriminals.createMany({
-        data: criminals.map((c) => ({ crimeId: crime.id, criminalId: c })),
-      });
-
-      return crime;
-    });
-
-    return await getById(result.id);
-  } catch (error) {
-    throw error;
-  }
+  return await getById(result.id);
 }
 
 /**
@@ -57,7 +45,7 @@ export async function updateCrime(
   data: CrimeUpdateType,
   id: number
 ): Promise<CrimeQueryType | null> {
-  const { hsClosingDate, hsOpeningDate, criminals, ...rest } = data;
+  const { hsClosingDate, hsOpeningDate, dateOfCrime, ...rest } = data;
   const updateData = { ...rest } as Omit<CrimeUpdateType, "criminals">;
   if (hsClosingDate) {
     updateData.hsClosingDate = new Date(hsClosingDate);
@@ -65,27 +53,18 @@ export async function updateCrime(
   if (hsOpeningDate) {
     updateData.hsOpeningDate = new Date(hsOpeningDate);
   }
-  try {
-    await prisma.$transaction(async (tx) => {
-      // Code running in a transaction...
-      await tx.crime.update({
-        data: {
-          ...updateData,
-        },
-        where: {
-          id,
-        },
-      });
-      await tx.crimesByCriminals.deleteMany({ where: { crimeId: id } });
-      await tx.crimesByCriminals.createMany({
-        data: criminals.map((c) => ({ crimeId: id, criminalId: c })),
-      });
-    });
-
-    return await getById(id);
-  } catch (error) {
-    throw error;
+  if (dateOfCrime) {
+    updateData.dateOfCrime = new Date(dateOfCrime);
   }
+  await prisma.crime.update({
+    data: {
+      ...updateData,
+    },
+    where: {
+      id,
+    },
+  });
+  return await getById(id);
 }
 
 /**
@@ -131,13 +110,13 @@ export async function paginate(
               },
             },
             {
-              aliases: {
+              policeStation: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              ageWhileOpening: {
+              firNo: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -311,13 +290,13 @@ export async function getAll(search?: string): Promise<CrimeExcelType[]> {
               },
             },
             {
-              aliases: {
+              policeStation: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              ageWhileOpening: {
+              firNo: {
                 contains: search,
                 mode: "insensitive",
               },
@@ -500,13 +479,13 @@ export async function count(search?: string): Promise<number> {
               },
             },
             {
-              aliases: {
+              policeStation: {
                 contains: search,
                 mode: "insensitive",
               },
             },
             {
-              ageWhileOpening: {
+              firNo: {
                 contains: search,
                 mode: "insensitive",
               },

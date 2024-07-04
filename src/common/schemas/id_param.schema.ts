@@ -13,18 +13,18 @@ export const getIdParamSchema = z
 
 export type GetIdParam = z.infer<typeof getIdParamSchema>;
 
-export const getCompanyIdParamSchema = z
+export const getCrimeIdParamSchema = z
   .object({
-    companyId: z
+    crimeId: z
       .string({
-        errorMap: () => ({ message: "Company ID must be a number" }),
+        errorMap: () => ({ message: "Crime ID must be a number" }),
       })
-      .regex(/^\d+$/, { message: "Company ID must be a number" })
+      .regex(/^\d+$/, { message: "Crime ID must be a number" })
       .transform((value) => parseInt(value)),
   })
   .required();
 
-export type GetCompanyIdParam = z.infer<typeof getCompanyIdParamSchema>;
+export type GetCrimeIdParam = z.infer<typeof getCrimeIdParamSchema>;
 
 export const getJailIdParamSchema = z
   .object({
@@ -52,7 +52,7 @@ export const getCourtIdParamSchema = z
 
 export type GetCourtIdParam = z.infer<typeof getCourtIdParamSchema>;
 
-export const getCompanyIdAndIdParamSchema = z
+export const getCrimeIdAndIdParamSchema = z
   .object({
     id: z
       .string({
@@ -60,15 +60,13 @@ export const getCompanyIdAndIdParamSchema = z
       })
       .regex(/^\d+$/, { message: "ID must be a number" })
       .transform((value) => parseInt(value)),
-    companyId: z
+    crimeId: z
       .string({
-        errorMap: () => ({ message: "Company ID must be a number" }),
+        errorMap: () => ({ message: "Crime ID must be a number" }),
       })
-      .regex(/^\d+$/, { message: "Company ID must be a number" })
+      .regex(/^\d+$/, { message: "Crime ID must be a number" })
       .transform((value) => parseInt(value)),
   })
   .required();
 
-export type GetCompanyIdAndIdParam = z.infer<
-  typeof getCompanyIdAndIdParamSchema
->;
+export type GetCrimeIdAndIdParam = z.infer<typeof getCrimeIdAndIdParamSchema>;

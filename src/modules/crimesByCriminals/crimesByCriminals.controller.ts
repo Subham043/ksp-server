@@ -6,34 +6,45 @@ import {
   findById,
   list,
   update,
-} from "./crime.services";
-import { GetIdParam } from "../../common/schemas/id_param.schema";
+} from "./crimesByCriminals.services";
+import { createCrimesByCriminalsUniqueSchema } from "./schemas/create.schema";
+import { updateCrimesByCriminalsUniqueSchema } from "./schemas/update.schema";
+import {
+  GetCrimeIdAndIdParam,
+  GetCrimeIdParam,
+  GetIdParam,
+} from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
-import { CrimeCreateType, CrimeUpdateType } from "../../@types/crime.type";
+import {
+  CrimesByCriminalsCreateType,
+  CrimesByCriminalsUpdateType,
+} from "../../@types/crimesByCriminals.type";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 
-export async function listCrimes(
+export async function listCrimesByCriminals(
   request: FastifyRequest<{
     Querystring: GetPaginationQuery;
+    Params: GetCrimeIdParam;
   }>,
   reply: FastifyReply
 ) {
-  const result = await list(request.query);
+  const result = await list(request.query, request.params.crimeId);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Crimes Fetched",
+    message: "Crimes By Criminals Fetched",
     data: result,
   });
 }
 
-export async function exportCrimes(
+export async function exportCrimesByCriminals(
   request: FastifyRequest<{
     Querystring: GetSearchQuery;
+    Params: GetCrimeIdParam;
   }>,
   reply: FastifyReply
 ) {
-  const result = await exportExcel(request.query);
+  const result = await exportExcel(request.query, request.params.crimeId);
   return reply
     .header("Content-Disposition", 'attachment; filename="crimes.xlsx"')
     .send(result.file);
@@ -46,7 +57,7 @@ export async function exportCrimes(
  * @param {FastifyReply} reply - the reply object for sending the response
  * @return {Promise<void>} a promise resolving to the fetched criminal data
  */
-export async function getCrime(
+export async function getCrimesByCriminals(
   request: FastifyRequest<{
     Params: GetIdParam;
   }>,
@@ -56,7 +67,7 @@ export async function getCrime(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Crime Fetched",
+    message: "Crimes By Criminals Fetched",
     data: result,
   });
 }
@@ -68,17 +79,22 @@ export async function getCrime(
  * @param {FastifyReply} reply - the reply object for sending the response
  * @return {Promise<void>} A promise that resolves when the criminal is successfully created
  */
-export async function createCrime(
+export async function createCrimesByCriminals(
   request: FastifyRequest<{
-    Body: CrimeCreateType;
+    Body: CrimesByCriminalsCreateType;
+    Params: GetCrimeIdParam;
   }>,
   reply: FastifyReply
 ): Promise<void> {
+  await createCrimesByCriminalsUniqueSchema.parseAsync({
+    criminalId: request.body.criminalId,
+    crimeId: request.params.crimeId,
+  });
   const result = await create(request.body, request.authenticatedUser!.id);
   return reply.code(201).type("application/json").send({
     code: 201,
     success: true,
-    message: "Crime Created",
+    message: "Crimes By Criminals Created",
     data: result,
   });
 }
@@ -90,18 +106,23 @@ export async function createCrime(
  * @param {FastifyReply} reply - The reply object for sending the response
  * @return {Promise<void>} A promise that resolves when the criminal is successfully updated
  */
-export async function updateCrime(
+export async function updateCrimesByCriminals(
   request: FastifyRequest<{
-    Body: CrimeUpdateType;
-    Params: GetIdParam;
+    Body: CrimesByCriminalsUpdateType;
+    Params: GetCrimeIdAndIdParam;
   }>,
   reply: FastifyReply
 ): Promise<void> {
+  await updateCrimesByCriminalsUniqueSchema.parseAsync({
+    id: request.params.id,
+    crimeId: request.params.crimeId,
+    criminalId: request.body.criminalId,
+  });
   const result = await update(request.body, request.params);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Crime Updated",
+    message: "Crimes By Criminals Updated",
     data: result,
   });
 }
@@ -113,7 +134,7 @@ export async function updateCrime(
  * @param {FastifyReply} reply - The reply object for sending the response
  * @return {Promise<void>} A promise that resolves after removing the criminal
  */
-export async function removeCrime(
+export async function removeCrimesByCriminals(
   request: FastifyRequest<{
     Params: GetIdParam;
   }>,
@@ -123,7 +144,7 @@ export async function removeCrime(
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,
-    message: "Crime Removed",
+    message: "Crimes By Criminals Removed",
     data: result,
   });
 }

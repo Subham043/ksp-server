@@ -119,13 +119,14 @@ model Criminal {
 model Crime {
   id        Int      @id @default(autoincrement())
   mobFileNo      String? @db.VarChar(256)
+  dateOfCrime     DateTime?
+  firNo      String? @db.VarChar(256)
+  policeStation      String? @db.VarChar(256)
   hsNo      String? @db.VarChar(256)
   hsOpeningDate     DateTime?
   hsClosingDate     DateTime?
   typeOfCrime      String  @db.VarChar(256)
   sectionOfLaw      String  @db.VarChar(256)
-  aliases      String? @db.Text
-  ageWhileOpening      String?  @db.VarChar(256)
   crimeGroup      String?  @db.VarChar(256)
   crimeHead      String?  @db.VarChar(256)
   crimeClass      String?  @db.VarChar(256)
@@ -154,15 +155,19 @@ model Crime {
 }
 
 model CrimesByCriminals {
+  id        Int      @default(autoincrement())
   crime Crime @relation(fields: [crimeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   crimeId Int
   criminal Criminal @relation(fields: [criminalId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   criminalId Int
+  aliases      String? @db.Text
+  ageWhileOpening      String?  @db.VarChar(256)
+  crimeArrestOrder      String?  @db.VarChar(256)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 
-  @@id([crimeId, criminalId])
-  @@unique([crimeId, criminalId], map: "idx_criminal_crimekey")
+  @@id([id, crimeId, criminalId])
+  @@unique([id, crimeId, criminalId], map: "idx_criminal_crimekey")
 }
 
 model CourtDetail {

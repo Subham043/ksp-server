@@ -1,6 +1,4 @@
 import { z } from "zod";
-import { getById } from "../crime.repository";
-import { getById as getByCriminalId } from "../../criminal/criminal.repository";
 
 export const updateCrimeBodySchema = z.object({
   mobFileNo: z
@@ -25,15 +23,15 @@ export const updateCrimeBodySchema = z.object({
       errorMap: () => ({ message: "Type of Crime must be a string" }),
     })
     .trim(),
-  aliases: z
+  firNo: z
     .string({
-      errorMap: () => ({ message: "Aliases must be a string" }),
+      errorMap: () => ({ message: "FIR No. must be a string" }),
     })
     .trim()
     .optional(),
-  ageWhileOpening: z
+  policeStation: z
     .string({
-      errorMap: () => ({ message: "Age While Opening must be a string" }),
+      errorMap: () => ({ message: "Police Station must be a string" }),
     })
     .trim()
     .optional(),
@@ -166,52 +164,13 @@ export const updateCrimeBodySchema = z.object({
     })
     .trim()
     .optional(),
-  criminals: z
-    .array(
-      z.number({
-        errorMap: () => ({ message: "Criminal must be a number" }),
-      })
-    )
-    .min(1, "Criminals is required")
-    .nonempty("Criminals is required"),
-});
-
-export const updateCrimeUniqueSchema = z.object({
-  id: z
-    .number({
-      errorMap: () => ({ message: "Id must be number" }),
+  dateOfCrime: z
+    .string({
+      errorMap: () => ({ message: "Date Of Crime must be a string" }),
     })
-    .positive({ message: "Id must be a positive number" })
-    .superRefine(async (id, ctx) => {
-      const crime = await getById(id);
-      if (!crime) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Id doesn't exist",
-          path: ["id"],
-        });
-        return false;
-      }
-    }),
-  criminals: z
-    .array(
-      z.number({
-        errorMap: () => ({ message: "Criminal must be a number" }),
-      })
-    )
-    .min(1, "Criminals is required")
-    .nonempty("Criminals is required")
-    .superRefine(async (criminals, ctx) => {
-      criminals.forEach(async (criminal) => {
-        const criminalData = await getByCriminalId(criminal);
-        if (!criminalData) {
-          ctx.addIssue({
-            code: "custom",
-            message: "Criminal doen't exists",
-            path: ["criminal"],
-          });
-          return false;
-        }
-      });
-    }),
+    .datetime({
+      message: "Date Of Crime must be a valid date",
+    })
+    .trim()
+    .optional(),
 });

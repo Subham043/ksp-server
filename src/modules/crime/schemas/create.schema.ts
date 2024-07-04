@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { getById } from "../../criminal/criminal.repository";
 
 export const createCrimeBodySchema = z.object({
   mobFileNo: z
@@ -24,15 +23,15 @@ export const createCrimeBodySchema = z.object({
       errorMap: () => ({ message: "Type of Crime must be a string" }),
     })
     .trim(),
-  aliases: z
+  firNo: z
     .string({
-      errorMap: () => ({ message: "Aliases must be a string" }),
+      errorMap: () => ({ message: "FIR No. must be a string" }),
     })
     .trim()
     .optional(),
-  ageWhileOpening: z
+  policeStation: z
     .string({
-      errorMap: () => ({ message: "Age While Opening must be a string" }),
+      errorMap: () => ({ message: "Police Station must be a string" }),
     })
     .trim()
     .optional(),
@@ -165,36 +164,13 @@ export const createCrimeBodySchema = z.object({
     })
     .trim()
     .optional(),
-  criminals: z
-    .array(
-      z.number({
-        errorMap: () => ({ message: "Criminal must be a number" }),
-      })
-    )
-    .min(1, "Criminals is required")
-    .nonempty("Criminals is required"),
-});
-
-export const createCrimeUniqueSchema = z.object({
-  criminals: z
-    .array(
-      z.number({
-        errorMap: () => ({ message: "Criminal must be a number" }),
-      })
-    )
-    .min(1, "Criminals is required")
-    .nonempty("Criminals is required")
-    .superRefine(async (criminals, ctx) => {
-      criminals.forEach(async (criminal) => {
-        const criminalData = await getById(criminal);
-        if (!criminalData) {
-          ctx.addIssue({
-            code: "custom",
-            message: "Criminal doen't exists",
-            path: ["criminal"],
-          });
-          return false;
-        }
-      });
-    }),
+  dateOfCrime: z
+    .string({
+      errorMap: () => ({ message: "Date Of Crime must be a string" }),
+    })
+    .datetime({
+      message: "Date Of Crime must be a valid date",
+    })
+    .trim()
+    .optional(),
 });
