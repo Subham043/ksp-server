@@ -90,7 +90,7 @@ export async function createCrimesByCriminals(
     criminalId: request.body.criminalId,
     crimeId: request.params.crimeId,
   });
-  const result = await create(request.body, request.authenticatedUser!.id);
+  const result = await create(request.body, request.params.crimeId);
   return reply.code(201).type("application/json").send({
     code: 201,
     success: true,

@@ -8,7 +8,8 @@ export const createCrimesByCriminalsBodySchema = z.object({
     .string({
       errorMap: () => ({ message: "Crime Arrest Order must be a string" }),
     })
-    .trim(),
+    .trim()
+    .optional(),
   aliases: z
     .string({
       errorMap: () => ({ message: "Aliases must be a string" }),
