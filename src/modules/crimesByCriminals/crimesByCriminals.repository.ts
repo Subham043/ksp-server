@@ -103,7 +103,9 @@ export async function paginate(
             },
           ],
         }
-      : {},
+      : {
+          crimeId,
+        },
     select: {
       ...CrimesByCriminalsColumn,
       criminal: {
@@ -162,7 +164,9 @@ export async function getAll(
             },
           ],
         }
-      : {},
+      : {
+          crimeId,
+        },
     select: {
       ...CrimesByCriminalsColumn,
       criminal: {
@@ -217,7 +221,9 @@ export async function count(crimeId: number, search?: string): Promise<number> {
             },
           ],
         }
-      : {},
+      : {
+          crimeId,
+        },
   });
 }
 

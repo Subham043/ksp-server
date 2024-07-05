@@ -104,7 +104,9 @@ export async function paginate(
             },
           ],
         }
-      : {},
+      : {
+          courtId,
+        },
     select: {
       ...HearingColumn,
     },
@@ -155,7 +157,9 @@ export async function getAll(
             },
           ],
         }
-      : {},
+      : {
+          courtId,
+        },
     select: {
       ...HearingColumn,
     },
@@ -202,7 +206,9 @@ export async function count(courtId: number, search?: string): Promise<number> {
             },
           ],
         }
-      : {},
+      : {
+          courtId,
+        },
   });
 }
 

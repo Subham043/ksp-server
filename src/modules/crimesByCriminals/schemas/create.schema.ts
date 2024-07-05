@@ -31,12 +31,9 @@ export const createCrimesByCriminalsUniqueSchema = z
     criminalId: z.number({
       errorMap: () => ({ message: "Criminal Id must be a number" }),
     }),
-    crimeId: z
-      .string({
-        errorMap: () => ({ message: "Crime Id must be a number" }),
-      })
-      .regex(/^\d+$/, { message: "Crime Id must be a number" })
-      .transform((value) => parseInt(value)),
+    crimeId: z.number({
+      errorMap: () => ({ message: "Crime Id must be a number" }),
+    }),
   })
   .superRefine(async ({ criminalId, crimeId }, ctx) => {
     const criminalData = await getByCriminalId(criminalId);
@@ -44,7 +41,7 @@ export const createCrimesByCriminalsUniqueSchema = z
       ctx.addIssue({
         code: "custom",
         message: "Criminal doen't exists",
-        path: ["criminal"],
+        path: ["criminalId"],
       });
       return false;
     }
@@ -65,7 +62,7 @@ export const createCrimesByCriminalsUniqueSchema = z
       ctx.addIssue({
         code: "custom",
         message: "Criminal already exists in this crime",
-        path: ["criminal"],
+        path: ["criminalId"],
       });
       return false;
     }

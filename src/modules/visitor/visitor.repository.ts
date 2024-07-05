@@ -94,7 +94,9 @@ export async function paginate(
             },
           ],
         }
-      : {},
+      : {
+          jailId,
+        },
     select: {
       ...VisitorColumn,
     },
@@ -139,7 +141,9 @@ export async function getAll(
             },
           ],
         }
-      : {},
+      : {
+          jailId,
+        },
     select: {
       ...VisitorColumn,
     },
@@ -180,7 +184,9 @@ export async function count(jailId: number, search?: string): Promise<number> {
             },
           ],
         }
-      : {},
+      : {
+          jailId,
+        },
   });
 }
 
