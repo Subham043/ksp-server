@@ -19,8 +19,22 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelCrimesByCriminalsColumns } from "./crimesByCriminals.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  CrimesByCriminalsExcelData,
+  ExcelCrimesByCriminalsColumns,
+  ExcelFailedCrimesByCriminalsColumns,
+} from "./crimesByCriminals.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  createCrimesByCriminalsBodySchema,
+  createCrimesByCriminalsUniqueSchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new crimesByCriminals with the provided crimesByCriminals information.
@@ -145,4 +159,74 @@ export async function destroy(
   const crimesByCriminals = await findById(params);
   await remove(id);
   return crimesByCriminals;
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  crimeId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const insertData: CrimesByCriminalsExcelData[] = [];
+  const failedCrimesByCriminalsImport: (CrimesByCriminalsExcelData & {
+    error: string;
+  })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const jailData = {
+        aliases: row.getCell(1).value?.toString(),
+        ageWhileOpening: row.getCell(2).value?.toString(),
+        crimeArrestOrder: row.getCell(3).value?.toString(),
+        criminalId: isNaN(Number(row.getCell(4).value?.toString()))
+          ? undefined
+          : Number(row.getCell(4).value?.toString()),
+      };
+      insertData.push(jailData);
+    }
+  });
+  for (let i = 0; i < insertData.length; i++) {
+    try {
+      await createCrimesByCriminalsBodySchema.parseAsync(insertData[i]);
+      await createCrimesByCriminalsUniqueSchema.parseAsync({
+        criminalId: insertData[i].criminalId,
+        crimeId,
+      });
+      const validatedCrimesByCriminalsData = {
+        ...insertData[i],
+        criminalId: insertData[i].criminalId || 0,
+      };
+      await createCrimesByCriminals(validatedCrimesByCriminalsData, crimeId);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedCrimesByCriminalsImport.push({
+        ...insertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedCrimesByCriminalsImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<
+      CrimesByCriminalsExcelData & { error: string }
+    >(
+      "Failed Crimes By Criminals Import",
+      ExcelFailedCrimesByCriminalsColumns,
+      failedCrimesByCriminalsImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

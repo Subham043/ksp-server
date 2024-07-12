@@ -3,6 +3,7 @@ import {
   createHearing,
   exportHearings,
   getHearing,
+  importHearings,
   listHearings,
   removeHearing,
   updateHearing,
@@ -15,6 +16,7 @@ import {
 } from "../../common/schemas/id_param.schema";
 import { createHearingBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function hearingRoutes(app: FastifyInstance) {
   app.get(
@@ -38,6 +40,14 @@ export async function hearingRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportHearings
+  );
+  app.post(
+    "/import/:courtId",
+    {
+      schema: { body: postExcelBodySchema, params: getCourtIdParamSchema },
+      preHandler: app.verifyJwt,
+    },
+    importHearings
   );
   app.post(
     "/create/:courtId",

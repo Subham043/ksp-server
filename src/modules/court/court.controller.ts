@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  importExcel,
   list,
   update,
 } from "./court.services";
@@ -13,6 +14,7 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { CourtCreateType, CourtUpdateType } from "../../@types/court.type";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listCourts(
   request: FastifyRequest<{
@@ -135,6 +137,21 @@ export async function removeCourt(
     code: 200,
     success: true,
     message: "Court Removed",
+    data: result,
+  });
+}
+
+export async function importCourts(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await importExcel(request.body, request.authenticatedUser!.id);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Courts Imported",
     data: result,
   });
 }

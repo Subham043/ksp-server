@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  importExcel,
   list,
   update,
 } from "./hearing.services";
@@ -18,6 +19,7 @@ import {
   HearingUpdateType,
 } from "../../@types/hearing.type";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listHearings(
   request: FastifyRequest<{
@@ -137,6 +139,22 @@ export async function removeHearing(
     code: 200,
     success: true,
     message: "Hearing Removed",
+    data: result,
+  });
+}
+
+export async function importHearings(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+    Params: GetCourtIdParam;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await importExcel(request.body, request.params.courtId);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Hearings Imported",
     data: result,
   });
 }

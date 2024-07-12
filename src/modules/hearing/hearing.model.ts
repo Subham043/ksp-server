@@ -1,5 +1,32 @@
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type HearingExcelData = {
+  hearingDate?: string | undefined;
+  nextHearingDate?: string | undefined;
+  attendance?: string | undefined;
+  judgeName?: string | undefined;
+  actionCodejudgeName?: string | undefined;
+  additionalRemarks?: string | undefined;
+  courtId?: number | undefined;
+};
+
+export const ExcelFailedHearingsColumns: WorksheetColumnsType = [
+  {
+    key: "hearingDate",
+    header: "Hearing Date",
+  },
+  {
+    key: "nextHearingDate",
+    header: "Next Hearing Date",
+  },
+  { key: "attendance", header: "Attendance" },
+  { key: "judgeName", header: "Judge Name" },
+  { key: "actionCode", header: "Action Code" },
+  { key: "additionalRemarks", header: "Additional Remarks" },
+  { key: "courtId", header: "Court Id" },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelHearingsColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   {

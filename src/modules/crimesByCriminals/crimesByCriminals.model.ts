@@ -1,5 +1,20 @@
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type CrimesByCriminalsExcelData = {
+  aliases?: string | undefined;
+  ageWhileOpening?: string | undefined;
+  crimeArrestOrder?: string | undefined;
+  criminalId?: number | undefined;
+};
+
+export const ExcelFailedCrimesByCriminalsColumns: WorksheetColumnsType = [
+  { key: "aliases", header: "Aliases" },
+  { key: "ageWhileOpening", header: "Age While Opening" },
+  { key: "crimeArrestOrder", header: "Crime Arrest Order" },
+  { key: "criminalId", header: "Criminal Id" },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelCrimesByCriminalsColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "aliases", header: "Aliases" },

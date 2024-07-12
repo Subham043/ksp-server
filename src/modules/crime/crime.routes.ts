@@ -3,6 +3,7 @@ import {
   createCrime,
   exportCrimes,
   getCrime,
+  importCrimes,
   listCrimes,
   removeCrime,
   updateCrime,
@@ -12,6 +13,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createCrimeBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function crimeRoutes(app: FastifyInstance) {
   app.get(
@@ -29,6 +31,14 @@ export async function crimeRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportCrimes
+  );
+  app.post(
+    "/import",
+    {
+      schema: { body: postExcelBodySchema },
+      preHandler: app.verifyJwt,
+    },
+    importCrimes
   );
   app.get(
     "/:id",

@@ -18,8 +18,23 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { CourtExcelType, ExcelCourtsColumns } from "./court.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  CourtExcelData,
+  CourtExcelType,
+  ExcelCourtsColumns,
+  ExcelFailedCourtsColumns,
+} from "./court.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  createCourtBodySchema,
+  createCourtUniqueSchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new court with the provided court information.
@@ -133,4 +148,79 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
 export async function destroy(params: GetIdParam): Promise<CourtType> {
   const { id } = params;
   return await remove(id);
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  userId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const courtInsertData: CourtExcelData[] = [];
+  const failedCourtsImport: (CourtExcelData & { error: string })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const courtData = {
+        courtName: row.getCell(1).value?.toString() as string,
+        ccScNo: row.getCell(2).value?.toString(),
+        psName: row.getCell(3).value?.toString(),
+        firNo: row.getCell(4).value?.toString(),
+        lawyerName: row.getCell(5).value?.toString(),
+        lawyerContact: row.getCell(6).value?.toString(),
+        suretyProviderDetail: row.getCell(7).value?.toString(),
+        suretyProviderContact: row.getCell(8).value?.toString(),
+        stageOfCase: row.getCell(9).value?.toString(),
+        additionalRemarks: row.getCell(10).value?.toString(),
+        criminalId: isNaN(Number(row.getCell(11).value?.toString()))
+          ? undefined
+          : Number(row.getCell(11).value?.toString()),
+        crimeId: isNaN(Number(row.getCell(12).value?.toString()))
+          ? undefined
+          : Number(row.getCell(12).value?.toString()),
+      };
+      courtInsertData.push(courtData);
+    }
+  });
+  for (let i = 0; i < courtInsertData.length; i++) {
+    try {
+      await createCourtBodySchema.parseAsync(courtInsertData[i]);
+      await createCourtUniqueSchema.parseAsync({
+        crimeId: courtInsertData[i].crimeId,
+        criminalId: courtInsertData[i].criminalId,
+      });
+      const validatedCourtData = {
+        ...courtInsertData[i],
+      };
+      await createCourt(validatedCourtData);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedCourtsImport.push({
+        ...courtInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedCourtsImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<CourtExcelData & { error: string }>(
+      "Failed Courts Import",
+      ExcelFailedCourtsColumns,
+      failedCourtsImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

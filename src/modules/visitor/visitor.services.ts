@@ -18,8 +18,23 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelVisitorsColumns, VisitorExportType } from "./visitor.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  ExcelFailedVisitorsColumns,
+  ExcelVisitorsColumns,
+  VisitorExcelData,
+  VisitorExportType,
+} from "./visitor.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  createVisitorBodySchema,
+  jailExistSchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new visitor with the provided visitor information.
@@ -138,4 +153,68 @@ export async function exportExcel(
 export async function destroy(params: GetIdParam): Promise<VisitorType> {
   const { id } = params;
   return await remove(id);
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  jailId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const jailInsertData: VisitorExcelData[] = [];
+  const failedVisitorsImport: (VisitorExcelData & { error: string })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const jailData = {
+        visitonDate: row.getCell(1).value?.toString(),
+        name: row.getCell(2).value?.toString(),
+        relation: row.getCell(3).value?.toString(),
+        additionalRemarks: row.getCell(4).value?.toString(),
+        jailId: jailId,
+      };
+      jailInsertData.push(jailData);
+    }
+  });
+  for (let i = 0; i < jailInsertData.length; i++) {
+    try {
+      await createVisitorBodySchema.parseAsync(jailInsertData[i]);
+      await jailExistSchema.parseAsync({
+        jailId: jailInsertData[i].jailId,
+      });
+      const validatedVisitorData = {
+        ...jailInsertData[i],
+        visitonDate: new Date(jailInsertData[i].visitonDate || ""),
+      };
+      await createVisitor(validatedVisitorData, jailId);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedVisitorsImport.push({
+        ...jailInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedVisitorsImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<VisitorExcelData & { error: string }>(
+      "Failed Visitors Import",
+      ExcelFailedVisitorsColumns,
+      failedVisitorsImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

@@ -3,6 +3,7 @@ import {
   createCrimesByCriminals,
   exportCrimesByCriminals,
   getCrimesByCriminals,
+  importCrimesByCriminals,
   listCrimesByCriminals,
   removeCrimesByCriminals,
   updateCrimesByCriminals,
@@ -16,6 +17,7 @@ import {
 } from "../../common/schemas/id_param.schema";
 import { createCrimesByCriminalsBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function crimesByCriminalsRoutes(app: FastifyInstance) {
   app.get(
@@ -39,6 +41,14 @@ export async function crimesByCriminalsRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportCrimesByCriminals
+  );
+  app.post(
+    "/import/:crimeId",
+    {
+      schema: { body: postExcelBodySchema, params: getCrimeIdParamSchema },
+      preHandler: app.verifyJwt,
+    },
+    importCrimesByCriminals
   );
   app.post(
     "/create/:crimeId",

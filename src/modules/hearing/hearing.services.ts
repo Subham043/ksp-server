@@ -18,8 +18,23 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelHearingsColumns, HearingExportType } from "./hearing.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  ExcelFailedHearingsColumns,
+  ExcelHearingsColumns,
+  HearingExcelData,
+  HearingExportType,
+} from "./hearing.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  courtExistSchema,
+  createHearingBodySchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new hearing with the provided hearing information.
@@ -138,4 +153,71 @@ export async function exportExcel(
 export async function destroy(params: GetIdParam): Promise<HearingType> {
   const { id } = params;
   return await remove(id);
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  courtId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const hearingInsertData: HearingExcelData[] = [];
+  const failedHearingsImport: (HearingExcelData & { error: string })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const jailData = {
+        hearingDate: row.getCell(1).value?.toString(),
+        nextHearingDate: row.getCell(2).value?.toString(),
+        attendance: row.getCell(3).value?.toString(),
+        judgeName: row.getCell(4).value?.toString(),
+        actionCodejudgeName: row.getCell(5).value?.toString(),
+        additionalRemarks: row.getCell(6).value?.toString(),
+        courtId: courtId,
+      };
+      hearingInsertData.push(jailData);
+    }
+  });
+  for (let i = 0; i < hearingInsertData.length; i++) {
+    try {
+      await createHearingBodySchema.parseAsync(hearingInsertData[i]);
+      await courtExistSchema.parseAsync({
+        courtId: hearingInsertData[i].courtId,
+      });
+      const validatedHearingData = {
+        ...hearingInsertData[i],
+        hearingDate: new Date(hearingInsertData[i].hearingDate || ""),
+        nextHearingDate: new Date(hearingInsertData[i].nextHearingDate || ""),
+      };
+      await createHearing(validatedHearingData, courtId);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedHearingsImport.push({
+        ...hearingInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedHearingsImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<HearingExcelData & { error: string }>(
+      "Failed Hearings Import",
+      ExcelFailedHearingsColumns,
+      failedHearingsImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

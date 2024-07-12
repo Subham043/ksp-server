@@ -18,9 +18,23 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelCriminalsColumns } from "./criminal.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  CriminalExcelData,
+  ExcelCriminalsColumns,
+  ExcelFailedCriminalsColumns,
+} from "./criminal.model";
 import { deleteImage, saveImage } from "../../utils/file";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  createCriminalBodySchema,
+  createCriminalUniqueSchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new criminal with the provided criminal information.
@@ -160,4 +174,102 @@ export async function destroy(params: GetIdParam): Promise<CriminalType> {
   criminal?.aadhar_photo && deleteImage(criminal.aadhar_photo);
   criminal?.photo && deleteImage(criminal.photo);
   return criminal;
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  userId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const criminalInsertData: CriminalExcelData[] = [];
+  const failedCriminalsImport: (CriminalExcelData & { error: string })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const criminalData = {
+        name: row.getCell(1).value?.toString(),
+        sex: row.getCell(2).value?.toString() as "Male" | "Female" | "Others",
+        dob: row.getCell(3).value?.toString(),
+        permanent_address: row.getCell(4).value?.toString(),
+        present_address: row.getCell(5).value?.toString(),
+        phone: row.getCell(6).value?.toString(),
+        aadhar_no: row.getCell(7).value?.toString(),
+        father_name: row.getCell(8).value?.toString(),
+        mother_name: row.getCell(9).value?.toString(),
+        spouse_name: row.getCell(10).value?.toString(),
+        religion: row.getCell(11).value?.toString(),
+        caste: row.getCell(12).value?.toString(),
+        fpb_sl_no: row.getCell(13).value?.toString(),
+        fpb_classn_no: row.getCell(14).value?.toString(),
+        occupation: row.getCell(15).value?.toString(),
+        educational_qualification: row.getCell(16).value?.toString(),
+        native_ps: row.getCell(17).value?.toString(),
+        native_district: row.getCell(18).value?.toString(),
+        voice: row.getCell(19).value?.toString(),
+        build: row.getCell(20).value?.toString(),
+        complexion: row.getCell(21).value?.toString(),
+        teeth: row.getCell(22).value?.toString(),
+        hair: row.getCell(23).value?.toString(),
+        eyes: row.getCell(24).value?.toString(),
+        habbits: row.getCell(25).value?.toString(),
+        burnMarks: row.getCell(26).value?.toString(),
+        tattoo: row.getCell(27).value?.toString(),
+        mole: row.getCell(28).value?.toString(),
+        scar: row.getCell(29).value?.toString(),
+        leucoderma: row.getCell(30).value?.toString(),
+        faceHead: row.getCell(31).value?.toString(),
+        otherPartsBody: row.getCell(32).value?.toString(),
+        dressUsed: row.getCell(33).value?.toString(),
+        beard: row.getCell(34).value?.toString(),
+        face: row.getCell(35).value?.toString(),
+        moustache: row.getCell(36).value?.toString(),
+        nose: row.getCell(37).value?.toString(),
+      };
+      criminalInsertData.push(criminalData);
+    }
+  });
+  for (let i = 0; i < criminalInsertData.length; i++) {
+    try {
+      await createCriminalBodySchema.parseAsync(criminalInsertData[i]);
+      await createCriminalUniqueSchema.parseAsync({
+        aadhar_no: criminalInsertData[i].aadhar_no,
+      });
+      const validatedCriminalData = {
+        ...criminalInsertData[i],
+        name: criminalInsertData[i].name || "",
+        dob: new Date(criminalInsertData[i].dob || ""),
+        createdBy: userId,
+      };
+      await createCriminal(validatedCriminalData);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedCriminalsImport.push({
+        ...criminalInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedCriminalsImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<CriminalExcelData & { error: string }>(
+      "Failed Criminals Import",
+      ExcelFailedCriminalsColumns,
+      failedCriminalsImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

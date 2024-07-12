@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  importExcel,
   list,
   update,
 } from "./crime.services";
@@ -11,6 +12,7 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { CrimeCreateType, CrimeUpdateType } from "../../@types/crime.type";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listCrimes(
   request: FastifyRequest<{
@@ -124,6 +126,21 @@ export async function removeCrime(
     code: 200,
     success: true,
     message: "Crime Removed",
+    data: result,
+  });
+}
+
+export async function importCrimes(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await importExcel(request.body, request.authenticatedUser!.id);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Crimes Imported",
     data: result,
   });
 }

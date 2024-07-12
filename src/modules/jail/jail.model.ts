@@ -1,5 +1,52 @@
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type JailExcelData = {
+  lawSection?: string | undefined;
+  policeStation?: string | undefined;
+  jailName?: string | undefined;
+  jailId?: string | undefined;
+  prisonerId?: string | undefined;
+  prisonerType?: string | undefined;
+  ward?: string | undefined;
+  barrack?: string | undefined;
+  registerNo?: string | undefined;
+  periodUndergone?: string | undefined;
+  firstAdmissionDate?: string | undefined;
+  jailEntryDate?: string | undefined;
+  jailReleaseDate?: string | undefined;
+  utpNo?: string | undefined;
+  additionalRemarks?: string | undefined;
+  criminalId?: number | undefined;
+  crimeId?: number | undefined;
+};
+
+export const ExcelFailedJailsColumns: WorksheetColumnsType = [
+  { key: "lawSection", header: "Law Section" },
+  { key: "policeStation", header: "Police Station" },
+  {
+    key: "firstAdmissionDate",
+    header: "First Admission Date",
+  },
+  {
+    key: "jailEntryDate",
+    header: "Jail Entry Date",
+  },
+  { key: "jailReleaseDate", header: "Jail Release Date" },
+  { key: "utpNo", header: "UTP No." },
+  { key: "jailName", header: "Jail Name" },
+  { key: "jailId", header: "Jail Id" },
+  { key: "prisonerId", header: "Prisoner Id" },
+  { key: "prisonerType", header: "Prisoner Type" },
+  { key: "ward", header: "Ward" },
+  { key: "barrack", header: "Barrack" },
+  { key: "registerNo", header: "Register No." },
+  { key: "periodUndergone", header: "Period Undergone" },
+  { key: "additionalRemarks", header: "Additional Remarks" },
+  { key: "criminalId", header: "Criminal Id" },
+  { key: "crimeId", header: "Crime Id" },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelJailsColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   { key: "lawSection", header: "Law Section" },

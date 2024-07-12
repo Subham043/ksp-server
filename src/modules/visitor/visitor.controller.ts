@@ -4,6 +4,7 @@ import {
   destroy,
   exportExcel,
   findById,
+  importExcel,
   list,
   update,
 } from "./visitor.services";
@@ -18,6 +19,7 @@ import {
   VisitorUpdateType,
 } from "../../@types/visitor.type";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
 
 export async function listVisitors(
   request: FastifyRequest<{
@@ -137,6 +139,22 @@ export async function removeVisitor(
     code: 200,
     success: true,
     message: "Visitor Removed",
+    data: result,
+  });
+}
+
+export async function importVisitors(
+  request: FastifyRequest<{
+    Body: PostExcelBody;
+    Params: GetJailIdParam;
+  }>,
+  reply: FastifyReply
+) {
+  const result = await importExcel(request.body, request.params.jailId);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "Visitors Imported",
     data: result,
   });
 }

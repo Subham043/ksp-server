@@ -18,8 +18,23 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelJailsColumns, JailExportType } from "./jail.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  ExcelFailedJailsColumns,
+  ExcelJailsColumns,
+  JailExcelData,
+  JailExportType,
+} from "./jail.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import {
+  createJailBodySchema,
+  createJailUniqueSchema,
+} from "./schemas/create.schema";
 
 /**
  * Create a new jail with the provided jail information.
@@ -133,4 +148,89 @@ export async function exportExcel(querystring: GetSearchQuery): Promise<{
 export async function destroy(params: GetIdParam): Promise<JailType> {
   const { id } = params;
   return await remove(id);
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  userId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const jailInsertData: JailExcelData[] = [];
+  const failedJailsImport: (JailExcelData & { error: string })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const jailData = {
+        lawSection: row.getCell(1).value?.toString(),
+        policeStation: row.getCell(2).value?.toString(),
+        jailName: row.getCell(3).value?.toString(),
+        jailId: row.getCell(4).value?.toString(),
+        prisonerId: row.getCell(5).value?.toString(),
+        prisonerType: row.getCell(6).value?.toString(),
+        ward: row.getCell(7).value?.toString(),
+        barrack: row.getCell(8).value?.toString(),
+        registerNo: row.getCell(9).value?.toString(),
+        periodUndergone: row.getCell(10).value?.toString(),
+        firstAdmissionDate: row.getCell(11).value?.toString(),
+        jailEntryDate: row.getCell(12).value?.toString(),
+        jailReleaseDate: row.getCell(13).value?.toString(),
+        utpNo: row.getCell(14).value?.toString(),
+        additionalRemarks: row.getCell(15).value?.toString(),
+        criminalId: isNaN(Number(row.getCell(16).value?.toString()))
+          ? undefined
+          : Number(row.getCell(16).value?.toString()),
+        crimeId: isNaN(Number(row.getCell(17).value?.toString()))
+          ? undefined
+          : Number(row.getCell(17).value?.toString()),
+      };
+      jailInsertData.push(jailData);
+    }
+  });
+  for (let i = 0; i < jailInsertData.length; i++) {
+    try {
+      await createJailBodySchema.parseAsync(jailInsertData[i]);
+      await createJailUniqueSchema.parseAsync({
+        crimeId: jailInsertData[i].crimeId,
+        criminalId: jailInsertData[i].criminalId,
+      });
+      const validatedJailData = {
+        ...jailInsertData[i],
+        firstAdmissionDate: new Date(
+          jailInsertData[i].firstAdmissionDate || ""
+        ),
+        jailEntryDate: new Date(jailInsertData[i].jailEntryDate || ""),
+        jailReleaseDate: new Date(jailInsertData[i].jailReleaseDate || ""),
+      };
+      await createJail(validatedJailData);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedJailsImport.push({
+        ...jailInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedJailsImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<JailExcelData & { error: string }>(
+      "Failed Jails Import",
+      ExcelFailedJailsColumns,
+      failedJailsImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

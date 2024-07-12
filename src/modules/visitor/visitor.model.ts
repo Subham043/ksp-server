@@ -1,5 +1,25 @@
 import { WorksheetColumnsType } from "../../utils/excel";
 
+export type VisitorExcelData = {
+  visitonDate?: string | undefined;
+  name?: string | undefined;
+  relation?: string | undefined;
+  additionalRemarks?: string | undefined;
+  jailId?: number | undefined;
+};
+
+export const ExcelFailedVisitorsColumns: WorksheetColumnsType = [
+  {
+    key: "visitonDate",
+    header: "Visiting Date",
+  },
+  { key: "name", header: "Name" },
+  { key: "relation", header: "Relation" },
+  { key: "additionalRemarks", header: "Additional Remarks" },
+  { key: "jailId", header: "Jail Id" },
+  { key: "error", header: "Error" },
+];
+
 export const ExcelVisitorsColumns: WorksheetColumnsType = [
   { key: "id", header: "ID" },
   {

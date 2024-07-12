@@ -20,8 +20,19 @@ import { PaginationType } from "../../@types/pagination.type";
 import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
-import { ExcelBuffer, generateExcel } from "../../utils/excel";
-import { ExcelCrimesColumns } from "./crime.model";
+import {
+  ExcelBuffer,
+  generateExcel,
+  readExcel,
+  storeExcel,
+} from "../../utils/excel";
+import {
+  CrimeExcelData,
+  ExcelCrimesColumns,
+  ExcelFailedCrimesColumns,
+} from "./crime.model";
+import { PostExcelBody } from "../../common/schemas/excel.schema";
+import { createCrimeBodySchema } from "./schemas/create.schema";
 
 /**
  * Create a new crime with the provided crime information.
@@ -143,4 +154,92 @@ export async function destroy(
   const crime = await findById(params);
   await remove(id);
   return crime;
+}
+
+export async function importExcel(
+  data: PostExcelBody,
+  userId: number
+): Promise<{
+  successCount: number;
+  errorCount: number;
+  fileName: string | null;
+}> {
+  let successCount = 0;
+  let errorCount = 0;
+  const crimeInsertData: CrimeExcelData[] = [];
+  const failedCrimesImport: (CrimeExcelData & { error: string })[] = [];
+  const worksheet = await readExcel(data.file);
+  worksheet?.eachRow(function (row, rowNumber) {
+    if (rowNumber > 1) {
+      const crimeData = {
+        typeOfCrime: row.getCell(1).value?.toString() || "",
+        sectionOfLaw: row.getCell(2).value?.toString() || "",
+        mobFileNo: row.getCell(3).value?.toString(),
+        hsNo: row.getCell(4).value?.toString(),
+        dateOfCrime: row.getCell(5).value?.toString(),
+        hsOpeningDate: row.getCell(6).value?.toString(),
+        hsClosingDate: row.getCell(7).value?.toString(),
+        policeStation: row.getCell(8).value?.toString(),
+        firNo: row.getCell(9).value?.toString(),
+        crimeGroup: row.getCell(10).value?.toString(),
+        crimeHead: row.getCell(11).value?.toString(),
+        crimeClass: row.getCell(12).value?.toString(),
+        briefFact: row.getCell(13).value?.toString(),
+        cluesLeft: row.getCell(14).value?.toString(),
+        languagesKnown: row.getCell(15).value?.toString(),
+        languagesUsed: row.getCell(16).value?.toString(),
+        placeAttacked: row.getCell(17).value?.toString(),
+        placeOfAssemblyAfterOffence: row.getCell(18).value?.toString(),
+        placeOfAssemblyBeforeOffence: row.getCell(19).value?.toString(),
+        propertiesAttacked: row.getCell(20).value?.toString(),
+        styleAssumed: row.getCell(21).value?.toString(),
+        toolsUsed: row.getCell(22).value?.toString(),
+        tradeMarks: row.getCell(23).value?.toString(),
+        transportUsedAfter: row.getCell(24).value?.toString(),
+        transportUsedBefore: row.getCell(25).value?.toString(),
+        gang: row.getCell(26).value?.toString() as "Yes" | "No",
+        gangStrength: row.getCell(27).value?.toString(),
+      };
+      crimeInsertData.push(crimeData);
+    }
+  });
+  for (let i = 0; i < crimeInsertData.length; i++) {
+    try {
+      await createCrimeBodySchema.parseAsync(crimeInsertData[i]);
+      const validatedCrimeData = {
+        ...crimeInsertData[i],
+        typeOfCrime: crimeInsertData[i].typeOfCrime || "",
+        sectionOfLaw: crimeInsertData[i].sectionOfLaw || "",
+        dateOfCrime: new Date(crimeInsertData[i].dateOfCrime || ""),
+        hsOpeningDate: new Date(crimeInsertData[i].hsOpeningDate || ""),
+        hsClosingDate: new Date(crimeInsertData[i].hsClosingDate || ""),
+        createdBy: userId,
+      };
+      await createCrime(validatedCrimeData);
+      successCount = successCount + 1;
+    } catch (error) {
+      failedCrimesImport.push({
+        ...crimeInsertData[i],
+        error: JSON.stringify(error),
+      });
+      errorCount = errorCount + 1;
+    }
+  }
+  if (failedCrimesImport.length > 0 && errorCount > 0) {
+    const fileName = await storeExcel<CrimeExcelData & { error: string }>(
+      "Failed Crimes Import",
+      ExcelFailedCrimesColumns,
+      failedCrimesImport
+    );
+    return {
+      successCount,
+      errorCount,
+      fileName,
+    };
+  }
+  return {
+    successCount,
+    errorCount,
+    fileName: null,
+  };
 }

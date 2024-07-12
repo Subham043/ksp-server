@@ -3,6 +3,7 @@ import {
   createVisitor,
   exportVisitors,
   getVisitor,
+  importVisitors,
   listVisitors,
   removeVisitor,
   updateVisitor,
@@ -15,6 +16,7 @@ import {
 } from "../../common/schemas/id_param.schema";
 import { createVisitorBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function visitorRoutes(app: FastifyInstance) {
   app.get(
@@ -38,6 +40,14 @@ export async function visitorRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportVisitors
+  );
+  app.post(
+    "/import/:jailId",
+    {
+      schema: { body: postExcelBodySchema, params: getJailIdParamSchema },
+      preHandler: app.verifyJwt,
+    },
+    importVisitors
   );
   app.post(
     "/create/:jailId",

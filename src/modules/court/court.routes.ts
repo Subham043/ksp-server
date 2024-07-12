@@ -3,6 +3,7 @@ import {
   createCourt,
   exportCourts,
   getCourt,
+  importCourts,
   listCourts,
   removeCourt,
   updateCourt,
@@ -12,6 +13,7 @@ import { getPaginationQuerySchema } from "../../common/schemas/pagination_query.
 import { getIdParamSchema } from "../../common/schemas/id_param.schema";
 import { createCourtBodySchema } from "./schemas/create.schema";
 import { getSearchQuerySchema } from "../../common/schemas/search_query.schema";
+import { postExcelBodySchema } from "../../common/schemas/excel.schema";
 
 export async function courtRoutes(app: FastifyInstance) {
   app.get(
@@ -29,6 +31,14 @@ export async function courtRoutes(app: FastifyInstance) {
       preHandler: app.verifyJwt,
     },
     exportCourts
+  );
+  app.post(
+    "/import",
+    {
+      schema: { body: postExcelBodySchema },
+      preHandler: app.verifyJwt,
+    },
+    importCourts
   );
   app.get(
     "/:id",
