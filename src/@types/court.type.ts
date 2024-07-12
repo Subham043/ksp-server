@@ -26,11 +26,15 @@ export type CourtType = {
     hsClosingDate?: Date | null;
   } | null;
   createdAt?: Date | null;
+  courtHearing: {
+    hearingDate?: Date | null;
+    nextHearingDate?: Date | null;
+  }[];
 };
 
 export type CourtOmitType = Omit<
   CourtType,
-  "id" | "createdAt" | "crime" | "accused"
+  "id" | "createdAt" | "crime" | "accused" | "courtHearing"
 >;
 export interface CourtCreateType extends CourtOmitType {}
 

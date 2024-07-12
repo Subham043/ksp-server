@@ -91,3 +91,8 @@ export const AccusedColumn = {
   id: true,
   name: true,
 } as const;
+
+export const CourtHearingColumn = {
+  hearingDate: true,
+  nextHearingDate: true,
+} as const;

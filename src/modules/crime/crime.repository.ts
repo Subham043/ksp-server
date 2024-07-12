@@ -648,6 +648,8 @@ export async function getByIdForPdf(
           criminal: true,
         },
       },
+      courtDetails: true,
+      jailDetails: true,
     },
   });
 }

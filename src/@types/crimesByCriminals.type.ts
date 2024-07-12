@@ -24,6 +24,8 @@ export type CrimesByCriminalsQueryType = {
     dob?: Date | null;
     phone?: string | null | undefined;
     aadhar_no?: string | null | undefined;
+    aadhar_photo?: string | null | undefined;
+    photo?: string | null | undefined;
   };
 };
 

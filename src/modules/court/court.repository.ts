@@ -4,7 +4,12 @@ import {
   CourtType,
   CourtUpdateType,
 } from "../../@types/court.type";
-import { AccusedColumn, CourtColumn, CrimeColumn } from "./court.model";
+import {
+  AccusedColumn,
+  CourtColumn,
+  CourtHearingColumn,
+  CrimeColumn,
+} from "./court.model";
 
 /**
  * Create a new court with the provided data.
@@ -22,6 +27,11 @@ export async function createCourt(data: CourtCreateType): Promise<CourtType> {
       },
       crime: {
         select: CrimeColumn,
+      },
+      courtHearing: {
+        select: CourtHearingColumn,
+        orderBy: { id: "desc" },
+        take: 1,
       },
     },
   });
@@ -48,6 +58,11 @@ export async function updateCourt(
       },
       crime: {
         select: CrimeColumn,
+      },
+      courtHearing: {
+        select: CourtHearingColumn,
+        orderBy: { id: "desc" },
+        take: 1,
       },
     },
   });
@@ -182,6 +197,11 @@ export async function paginate(
       crime: {
         select: CrimeColumn,
       },
+      courtHearing: {
+        select: CourtHearingColumn,
+        orderBy: { id: "desc" },
+        take: 1,
+      },
     },
     orderBy: {
       id: "desc",
@@ -310,6 +330,11 @@ export async function getAll(search?: string): Promise<CourtType[]> {
       },
       crime: {
         select: CrimeColumn,
+      },
+      courtHearing: {
+        select: CourtHearingColumn,
+        orderBy: { id: "desc" },
+        take: 1,
       },
     },
     orderBy: {
@@ -451,6 +476,11 @@ export async function getById(id: number): Promise<CourtType | null> {
       crime: {
         select: CrimeColumn,
       },
+      courtHearing: {
+        select: CourtHearingColumn,
+        orderBy: { id: "desc" },
+        take: 1,
+      },
     },
   });
 }
@@ -471,6 +501,11 @@ export async function remove(id: number): Promise<CourtType> {
       },
       crime: {
         select: CrimeColumn,
+      },
+      courtHearing: {
+        select: CourtHearingColumn,
+        orderBy: { id: "desc" },
+        take: 1,
       },
     },
   });

@@ -9,6 +9,7 @@
             width: 100%;
             padding: 0px;
             margin: 0;
+            background-color: #dddddd;
         }
         .w-100{
             width: 100%;
@@ -33,6 +34,9 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .w-30{
+            width: 30%;
+        }
         .w-50{
             width: 50%;
         }
@@ -46,37 +50,16 @@
             padding: 5px;
             text-align: left;
             border-bottom: 1px dotted #ccc;
-        }
-        .main-heading{
-            background-color: #087593;
-            color: #fff;
-            padding: 5px;
-            border: 1px solid #087593;
-        }
-        .sub-heading{
-            background-color: #222;
-            color: #fff;
-            padding: 3px;
-            border: 1px solid #222;
+            background-color: #fff;
         }
         .mx-auto{
             margin-left: auto;
             margin-right: auto;
         }
-        .td-heading{
-            background-color: #eee;
-            color: #222;
-        }
-        .td-heading.td{
-            padding: 5px;
-            border-bottom: 1px dotted #eee;
-            text-align: center;
-        }
         .logo{
             height: 100px;
             object-fit: contain;
             object-position: center;
-            margin-bottom: 10px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -87,89 +70,188 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .bg-gray{
+            background-color: #dddddd;
+        }
+        .logo-heading{
+            background-color: #dddddd !important;
+            padding: 5px;
+        }
+        .main-heading{
+            background-color: #087593 !important;
+            color: #fff;
+            padding: 5px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 1px solid #087593;
+        }
+        .main-heading th{
+            background-color: #087593 !important;
+        }
+        .sub-heading{
+            background-color: #222 !important;
+            color: #fff;
+            padding: 3px;
+            border: 1px solid #222;
+        }
+        .sub-heading th{
+            background-color: #222 !important;
+        }
+        .td-heading{
+            background-color: #eee !important;
+            color: #222;
+        }
+        .td-heading th.td{
+            padding: 5px;
+            border-bottom: 1px dotted #eee;
+            text-align: center;
+            background-color: #eee !important;
+        }
     </style>
 </head>
 <body class="body-container">
-    <div class="w-100 text-center main-heading">
+    <div class="w-100 text-center logo-heading">
         <img src="<%= main_url %>/api/upload/logo?token=<%= token %>" class="logo" />
-        <h2 class="m-0 p-0">Crime Report</h2>
     </div>
-    <div class="w-100 mt-10 mb-10">
+    <div class="w-100 mt-10 mb-10 bg-gray">
         <table class="table">
             <tbody class="w-100">
+                <tr class="w-100 main-heading">
+                    <th class="w-100 td text-center" colspan="2"><p class="text-center p-0 m-0">Crime Report</p></th>
+                </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">Crime ID:</th>
+                    <th class="w-30 td">Crime ID:</th>
                     <td class="w-50 td"><%= data.id %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">Type of Crime:</th>
+                    <th class="w-30 td">Type of Crime:</th>
                     <td class="w-50 td"><%= data.typeOfCrime %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">Section Of Law:</th>
+                    <th class="w-30 td">Section Of Law:</th>
                     <td class="w-50 td"><%= data.sectionOfLaw %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">M.O.B. File No:</th>
+                    <th class="w-30 td">M.O.B. File No:</th>
                     <td class="w-50 td"><%= data.mobFileNo %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">Crime Group:</th>
+                    <th class="w-30 td">Crime Group:</th>
                     <td class="w-50 td"><%= data.crimeGroup %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">Crime Head:</th>
+                    <th class="w-30 td">Crime Head:</th>
                     <td class="w-50 td"><%= data.crimeHead %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">FIR No.:</th>
+                    <th class="w-30 td">FIR No.:</th>
                     <td class="w-50 td"><%= data.firNo %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">Police Station:</th>
+                    <th class="w-30 td">Police Station:</th>
                     <td class="w-50 td"><%= data.policeStation %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">HS. No.:</th>
+                    <th class="w-30 td">HS. No.:</th>
                     <td class="w-50 td"><%= data.hsNo %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">HS. Opening Date:</th>
+                    <th class="w-30 td">HS. Opening Date:</th>
                     <td class="w-50 td"><%= data.hsOpeningDate %></td>
                 </tr>
                 <tr class="w-100">
-                    <th class="w-50 td">HS. Closing Date:</th>
+                    <th class="w-30 td">HS. Closing Date:</th>
                     <td class="w-50 td"><%= data.hsClosingDate %></td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
-    <% if (data.criminals.length>0) { %>
-        <% data.criminals.map((criminal, index)=>{ %>
-            <div class="w-100 text-center sub-heading">
-                <h4 class="m-0 p-0">Criminal #<%= index+1 %></h2>
-            </div>
-            <div class="w-100 mt-10 mb-10">
-                <table class="table">
-                    <tbody class="w-100">
+                <tr class="w-100 td-heading text-center" align="center">
+                    <th class="w-100 td text-center" colspan="2" align="center"><p class="text-center p-0 m-0">Special Features</p></th>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Clues left at or Near the Scene of Occurrence:</th>
+                    <td class="w-50 td"><%= data.cluesLeft %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Languages Known:</th>
+                    <td class="w-50 td"><%= data.languagesKnown %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Language Used During the Offence:</th>
+                    <td class="w-50 td"><%= data.languagesUsed %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Place Attacked:</th>
+                    <td class="w-50 td"><%= data.placeAttacked %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Places of Assembly After Offence:</th>
+                    <td class="w-50 td"><%= data.placeOfAssemblyAfterOffence %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Places of Assembly Before Offence:</th>
+                    <td class="w-50 td"><%= data.placeOfAssemblyBeforeOffence %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Properties Attacked/stolen:</th>
+                    <td class="w-50 td"><%= data.propertiesAttacked %></td>
+                </tr>
+                <tr class="w-100 td-heading text-center" align="center">
+                    <th class="w-100 td text-center" colspan="2" align="center"><p class="text-center p-0 m-0">Physical Peculiarities</p></th>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Style Assumed:</th>
+                    <td class="w-50 td"><%= data.styleAssumed %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Tool/Weapons Used:</th>
+                    <td class="w-50 td"><%= data.toolsUsed %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Trade Marks:</th>
+                    <td class="w-50 td"><%= data.tradeMarks %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Transport used After:</th>
+                    <td class="w-50 td"><%= data.transportUsedAfter %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Transport used Before:</th>
+                    <td class="w-50 td"><%= data.transportUsedBefore %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Gang:</th>
+                    <td class="w-50 td"><%= data.gang %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Gang Strength:</th>
+                    <td class="w-50 td"><%= data.gangStrength %></td>
+                </tr>
+                <tr class="w-100">
+                    <th class="w-30 td">Brief Fact:</th>
+                    <td class="w-50 td"><%= data.briefFact %></td>
+                </tr>
+                <% if (data.criminals.length>0) { %>
+                    <% data.criminals.map((criminal, index)=>{ %>
+                        <tr class="w-100 sub-heading text-center" align="center">
+                            <th class="w-100 td text-center" colspan="2" align="center"><p class="text-center p-0 m-0">Criminal #<%= index+1 %></p></th>
+                        </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Criminal ID:</th>
+                            <th class="w-30 td">Criminal ID:</th>
                             <td class="w-50 td"><%= criminal.criminal.id %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Name:</th>
+                            <th class="w-30 td">Name:</th>
                             <td class="w-50 td"><%= criminal.criminal.name %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Sex:</th>
+                            <th class="w-30 td">Sex:</th>
                             <td class="w-50 td"><%= criminal.criminal.sex %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Aadhar Number:</th>
+                            <th class="w-30 td">Aadhar Number:</th>
                             <td class="w-50 td"><%= criminal.criminal.aadhar_no %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Aadhar Photo:</th>
+                            <th class="w-30 td">Aadhar Photo:</th>
                             <td class="w-50 td">
                                 <% if (criminal.criminal.aadhar_photo) { %>
                                 <img src="<%= main_url %>/api/upload/images/<%= criminal.criminal.aadhar_photo %>?token=<%= token %>" class="file_img" />
@@ -177,15 +259,15 @@
                             </td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Relation Name:</th>
+                            <th class="w-30 td">Relation Name:</th>
                             <td class="w-50 td"><%= criminal.criminal.relation_name %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Relation Type:</th>
+                            <th class="w-30 td">Relation Type:</th>
                             <td class="w-50 td"><%= criminal.criminal.relation_type %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Personal Photo:</th>
+                            <th class="w-30 td">Personal Photo:</th>
                             <td class="w-50 td">
                                 <% if (criminal.criminal.photo) { %>
                                 <img src="<%= main_url %>/api/upload/images/<%= criminal.criminal.photo %>?token=<%= token %>" class="file_img" />
@@ -196,208 +278,244 @@
                             <th class="w-100 td text-center" colspan="2"><p class="text-center p-0 m-0">Personal Information</p></th>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Dress Used:</th>
+                            <th class="w-30 td">Dress Used:</th>
                             <td class="w-50 td"><%= criminal.criminal.dressUsed %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Voice / Speech:</th>
+                            <th class="w-30 td">Voice / Speech:</th>
                             <td class="w-50 td"><%= criminal.criminal.voice %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Build:</th>
+                            <th class="w-30 td">Build:</th>
                             <td class="w-50 td"><%= criminal.criminal.build %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Complexion:</th>
+                            <th class="w-30 td">Complexion:</th>
                             <td class="w-50 td"><%= criminal.criminal.complexion %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Teeth:</th>
+                            <th class="w-30 td">Teeth:</th>
                             <td class="w-50 td"><%= criminal.criminal.teeth %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Hair:</th>
+                            <th class="w-30 td">Hair:</th>
                             <td class="w-50 td"><%= criminal.criminal.hair %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Eyes:</th>
+                            <th class="w-30 td">Eyes:</th>
                             <td class="w-50 td"><%= criminal.criminal.eyes %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Habits And Vices:</th>
+                            <th class="w-30 td">Habits And Vices:</th>
                             <td class="w-50 td"><%= criminal.criminal.habbits %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Burn Marks:</th>
+                            <th class="w-30 td">Burn Marks:</th>
                             <td class="w-50 td"><%= criminal.criminal.burnMarks %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Tattoo:</th>
+                            <th class="w-30 td">Tattoo:</th>
                             <td class="w-50 td"><%= criminal.criminal.tattoo %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Mole:</th>
+                            <th class="w-30 td">Mole:</th>
                             <td class="w-50 td"><%= criminal.criminal.mole %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Scar:</th>
+                            <th class="w-30 td">Scar:</th>
                             <td class="w-50 td"><%= criminal.criminal.scar %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Leucoderma:</th>
+                            <th class="w-30 td">Leucoderma:</th>
                             <td class="w-50 td"><%= criminal.criminal.leucoderma %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Face/Head:</th>
+                            <th class="w-30 td">Face/Head:</th>
                             <td class="w-50 td"><%= criminal.criminal.faceHead %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Other parts of body:</th>
+                            <th class="w-30 td">Other parts of body:</th>
                             <td class="w-50 td"><%= criminal.criminal.otherPartsBody %></td>
                         </tr>
                         <tr class="w-100 td-heading text-center" align="center">
                             <th class="w-100 td text-center" colspan="2" align="center"><p class="text-center p-0 m-0">Other Information</p></th>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">DOB:</th>
+                            <th class="w-30 td">DOB:</th>
                             <td class="w-50 td"><%= criminal.criminal.dob %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Phone:</th>
+                            <th class="w-30 td">Phone:</th>
                             <td class="w-50 td"><%= criminal.criminal.phone %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Caste:</th>
+                            <th class="w-30 td">Caste:</th>
                             <td class="w-50 td"><%= criminal.criminal.caste %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Occupation:</th>
+                            <th class="w-30 td">Occupation:</th>
                             <td class="w-50 td"><%= criminal.criminal.occupation %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Educational Qualification:</th>
+                            <th class="w-30 td">Educational Qualification:</th>
                             <td class="w-50 td"><%= criminal.criminal.educational_qualification %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">FPB Sl.No:</th>
+                            <th class="w-30 td">FPB Sl.No:</th>
                             <td class="w-50 td"><%= criminal.criminal.fpb_sl_no %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">FPB Classn.No:</th>
+                            <th class="w-30 td">FPB Classn.No:</th>
                             <td class="w-50 td"><%= criminal.criminal.fpb_classn_no %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Native PS:</th>
+                            <th class="w-30 td">Native PS:</th>
                             <td class="w-50 td"><%= criminal.criminal.native_ps %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Native District:</th>
+                            <th class="w-30 td">Native District:</th>
                             <td class="w-50 td"><%= criminal.criminal.native_district %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Permenant Address:</th>
+                            <th class="w-30 td">Permenant Address:</th>
                             <td class="w-50 td"><%= criminal.criminal.permanent_address %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Present Address:</th>
+                            <th class="w-30 td">Present Address:</th>
                             <td class="w-50 td"><%= criminal.criminal.present_address %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Beard:</th>
+                            <th class="w-30 td">Beard:</th>
                             <td class="w-50 td"><%= criminal.criminal.beard %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Face:</th>
+                            <th class="w-30 td">Face:</th>
                             <td class="w-50 td"><%= criminal.criminal.face %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Moustaches:</th>
+                            <th class="w-30 td">Moustaches:</th>
                             <td class="w-50 td"><%= criminal.criminal.moustache %></td>
                         </tr>
                         <tr class="w-100">
-                            <th class="w-50 td">Nose:</th>
+                            <th class="w-30 td">Nose:</th>
                             <td class="w-50 td"><%= criminal.criminal.nose %></td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-        <% }) %>
-    <% } %>
-    <div class="w-100 text-center sub-heading">
-        <h4 class="m-0 p-0">Special Features</h2>
-    </div>
-    <div class="w-100 mt-10 mb-10">
-        <table class="table">
-            <tbody class="w-100">
-                <tr class="w-100">
-                    <th class="w-50 td">Clues left at or Near the Scene of Occurrence:</th>
-                    <td class="w-50 td"><%= data.cluesLeft %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Languages Known:</th>
-                    <td class="w-50 td"><%= data.languagesKnown %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Language Used During the Offence:</th>
-                    <td class="w-50 td"><%= data.languagesUsed %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Place Attacked:</th>
-                    <td class="w-50 td"><%= data.placeAttacked %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Places of Assembly After Offence:</th>
-                    <td class="w-50 td"><%= data.placeOfAssemblyAfterOffence %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Places of Assembly Before Offence:</th>
-                    <td class="w-50 td"><%= data.placeOfAssemblyBeforeOffence %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Properties Attacked/stolen:</th>
-                    <td class="w-50 td"><%= data.propertiesAttacked %></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="w-100 text-center sub-heading">
-        <h4 class="m-0 p-0">Physical Peculiarities</h2>
-    </div>
-    <div class="w-100 mt-10 mb-10">
-        <table class="table">
-            <tbody class="w-100">
-                <tr class="w-100">
-                    <th class="w-50 td">Style Assumed:</th>
-                    <td class="w-50 td"><%= data.styleAssumed %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Tool/Weapons Used:</th>
-                    <td class="w-50 td"><%= data.toolsUsed %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Trade Marks:</th>
-                    <td class="w-50 td"><%= data.tradeMarks %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Transport used After:</th>
-                    <td class="w-50 td"><%= data.transportUsedAfter %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Transport used Before:</th>
-                    <td class="w-50 td"><%= data.transportUsedBefore %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Gang:</th>
-                    <td class="w-50 td"><%= data.gang %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Gang Strength:</th>
-                    <td class="w-50 td"><%= data.gangStrength %></td>
-                </tr>
-                <tr class="w-100">
-                    <th class="w-50 td">Brief Fact:</th>
-                    <td class="w-50 td"><%= data.briefFact %></td>
-                </tr>
+                        <% if (data.courtDetails.length>0 && data.courtDetails.filter(c=>c.criminalId==criminal.criminal.id).length>0) { %>
+                            <% data.courtDetails.map((courtDetail, index)=>{ %>
+                                <% if (courtDetail.criminalId==criminal.criminal.id) { %>
+                                    <tr class="w-100 td-heading text-center">
+                                        <th class="w-100 td text-center" colspan="2"><p class="text-center p-0 m-0">Court Information</p></th>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">CC/SC No.:</th>
+                                        <td class="w-50 td"><%= courtDetail.ccScNo %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">PS Name:</th>
+                                        <td class="w-50 td"><%= courtDetail.psName %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">FIR No.:</th>
+                                        <td class="w-50 td"><%= courtDetail.firNo %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Lawyer Name:</th>
+                                        <td class="w-50 td"><%= courtDetail.lawyerName %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Lawyer Contact:</th>
+                                        <td class="w-50 td"><%= courtDetail.lawyerContact %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Surety Provider Detail:</th>
+                                        <td class="w-50 td"><%= courtDetail.suretyProviderDetail %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Surety Provider Contact:</th>
+                                        <td class="w-50 td"><%= courtDetail.suretyProviderContact %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Stage Of Case:</th>
+                                        <td class="w-50 td"><%= courtDetail.stageOfCase %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Additional Remarks:</th>
+                                        <td class="w-50 td"><%= courtDetail.additionalRemarks %></td>
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        <% } %>
+                        <% if (data.jailDetails.length>0 && data.jailDetails.filter(c=>c.criminalId==criminal.criminal.id).length>0) { %>
+                            <% data.jailDetails.map((jailDetail, index)=>{ %>
+                                <% if (jailDetail.criminalId==criminal.criminal.id) { %>
+                                    <tr class="w-100 td-heading text-center">
+                                        <th class="w-100 td text-center" colspan="2"><p class="text-center p-0 m-0">Jail Information</p></th>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Section Of Law:</th>
+                                        <td class="w-50 td"><%= jailDetail.lawSection %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Police Station:</th>
+                                        <td class="w-50 td"><%= jailDetail.policeStation %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Jail Name:</th>
+                                        <td class="w-50 td"><%= jailDetail.jailName %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Jail Id:</th>
+                                        <td class="w-50 td"><%= jailDetail.jailId %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Prisoner Id:</th>
+                                        <td class="w-50 td"><%= jailDetail.prisonerId %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Prisoner Type:</th>
+                                        <td class="w-50 td"><%= jailDetail.prisonerType %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Ward:</th>
+                                        <td class="w-50 td"><%= jailDetail.ward %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Barrack:</th>
+                                        <td class="w-50 td"><%= jailDetail.barrack %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Register No:</th>
+                                        <td class="w-50 td"><%= jailDetail.registerNo %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Period Undergone:</th>
+                                        <td class="w-50 td"><%= jailDetail.periodUndergone %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">First Admission Date:</th>
+                                        <td class="w-50 td"><%= jailDetail.firstAdmissionDate %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Jail Entry Date:</th>
+                                        <td class="w-50 td"><%= jailDetail.jailEntryDate %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Jail Release Date:</th>
+                                        <td class="w-50 td"><%= jailDetail.jailReleaseDate %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">UTP No.:</th>
+                                        <td class="w-50 td"><%= jailDetail.utpNo %></td>
+                                    </tr>
+                                    <tr class="w-100">
+                                        <th class="w-30 td">Additional Remarks:</th>
+                                        <td class="w-50 td"><%= jailDetail.additionalRemarks %></td>
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        <% } %>
+                    <% }) %>
+                <% } %>
             </tbody>
         </table>
     </div>

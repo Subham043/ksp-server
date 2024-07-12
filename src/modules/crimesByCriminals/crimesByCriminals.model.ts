@@ -15,6 +15,8 @@ export const CriminalColumn = {
   dob: true,
   phone: true,
   aadhar_no: true,
+  aadhar_photo: true,
+  photo: true,
 } as const;
 
 export const CrimeColumn = {
