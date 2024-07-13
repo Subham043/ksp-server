@@ -171,7 +171,7 @@ export async function importExcel(
   worksheet?.eachRow(function (row, rowNumber) {
     if (rowNumber > 1) {
       const jailData = {
-        visitonDate: row.getCell(1).value?.toString(),
+        visitonDate: (row.getCell(1).value as Date | undefined)?.toISOString(),
         name: row.getCell(2).value?.toString(),
         relation: row.getCell(3).value?.toString(),
         additionalRemarks: row.getCell(4).value?.toString(),

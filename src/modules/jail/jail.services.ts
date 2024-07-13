@@ -176,9 +176,15 @@ export async function importExcel(
         barrack: row.getCell(8).value?.toString(),
         registerNo: row.getCell(9).value?.toString(),
         periodUndergone: row.getCell(10).value?.toString(),
-        firstAdmissionDate: row.getCell(11).value?.toString(),
-        jailEntryDate: row.getCell(12).value?.toString(),
-        jailReleaseDate: row.getCell(13).value?.toString(),
+        firstAdmissionDate: (
+          row.getCell(11).value as Date | undefined
+        )?.toISOString(),
+        jailEntryDate: (
+          row.getCell(12).value as Date | undefined
+        )?.toISOString(),
+        jailReleaseDate: (
+          row.getCell(13).value as Date | undefined
+        )?.toISOString(),
         utpNo: row.getCell(14).value?.toString(),
         additionalRemarks: row.getCell(15).value?.toString(),
         criminalId: isNaN(Number(row.getCell(16).value?.toString()))

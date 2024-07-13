@@ -171,11 +171,13 @@ export async function importExcel(
   worksheet?.eachRow(function (row, rowNumber) {
     if (rowNumber > 1) {
       const jailData = {
-        hearingDate: row.getCell(1).value?.toString(),
-        nextHearingDate: row.getCell(2).value?.toString(),
+        hearingDate: (row.getCell(1).value as Date | undefined)?.toISOString(),
+        nextHearingDate: (
+          row.getCell(2).value as Date | undefined
+        )?.toISOString(),
         attendance: row.getCell(3).value?.toString(),
         judgeName: row.getCell(4).value?.toString(),
-        actionCodejudgeName: row.getCell(5).value?.toString(),
+        actionCode: row.getCell(5).value?.toString(),
         additionalRemarks: row.getCell(6).value?.toString(),
         courtId: courtId,
       };

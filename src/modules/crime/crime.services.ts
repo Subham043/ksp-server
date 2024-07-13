@@ -176,29 +176,21 @@ export async function importExcel(
         sectionOfLaw: row.getCell(2).value?.toString() || "",
         mobFileNo: row.getCell(3).value?.toString(),
         hsNo: row.getCell(4).value?.toString(),
-        dateOfCrime: row.getCell(5).value?.toString(),
-        hsOpeningDate: row.getCell(6).value?.toString(),
-        hsClosingDate: row.getCell(7).value?.toString(),
+        dateOfCrime: (row.getCell(5).value as Date | undefined)?.toISOString(),
+        hsOpeningDate: (
+          row.getCell(6).value as Date | undefined
+        )?.toISOString(),
+        hsClosingDate: (
+          row.getCell(7).value as Date | undefined
+        )?.toISOString(),
         policeStation: row.getCell(8).value?.toString(),
         firNo: row.getCell(9).value?.toString(),
         crimeGroup: row.getCell(10).value?.toString(),
         crimeHead: row.getCell(11).value?.toString(),
         crimeClass: row.getCell(12).value?.toString(),
         briefFact: row.getCell(13).value?.toString(),
-        cluesLeft: row.getCell(14).value?.toString(),
-        languagesKnown: row.getCell(15).value?.toString(),
-        languagesUsed: row.getCell(16).value?.toString(),
-        placeAttacked: row.getCell(17).value?.toString(),
-        placeOfAssemblyAfterOffence: row.getCell(18).value?.toString(),
-        placeOfAssemblyBeforeOffence: row.getCell(19).value?.toString(),
-        propertiesAttacked: row.getCell(20).value?.toString(),
-        styleAssumed: row.getCell(21).value?.toString(),
-        toolsUsed: row.getCell(22).value?.toString(),
-        tradeMarks: row.getCell(23).value?.toString(),
-        transportUsedAfter: row.getCell(24).value?.toString(),
-        transportUsedBefore: row.getCell(25).value?.toString(),
-        gang: row.getCell(26).value?.toString() as "Yes" | "No",
-        gangStrength: row.getCell(27).value?.toString(),
+        gang: row.getCell(14).value?.toString() as "Yes" | "No",
+        gangStrength: row.getCell(15).value?.toString(),
       };
       crimeInsertData.push(crimeData);
     }
