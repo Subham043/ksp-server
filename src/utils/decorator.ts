@@ -46,7 +46,7 @@ export const ServerErrorHandler = (
     .status(error.statusCode || 500)
     .type("application/json")
     .send({
-      ...error,
+      // ...error,
       message: error.message || "Internal Server Error",
       statusCode: error.statusCode || 500,
       success: false,

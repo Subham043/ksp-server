@@ -26,6 +26,28 @@ export async function downloadFailedExcel(
   }
 }
 
+export async function downloadSampleExcel(
+  request: FastifyRequest<{
+    Params: GetUuidParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  try {
+    const { id } = request.params;
+    const filePath = path.resolve(
+      __dirname,
+      "../../../static/sample_excel",
+      id
+    );
+    const fileStream = fs.createReadStream(filePath);
+    return reply
+      .header("Content-Disposition", 'attachment; filename="SampleExcel.xlsx"')
+      .send(fileStream);
+  } catch (error) {
+    throw new NotFoundError("File not found");
+  }
+}
+
 export async function sendImageStream(
   request: FastifyRequest<{
     Params: GetUuidParam;
