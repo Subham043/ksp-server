@@ -46,7 +46,7 @@ export const updateCriminalBodySchema = z.object({
     .string({
       errorMap: () => ({ message: "Phone must be a number" }),
     })
-    .regex(/^\d+$/, { message: "Phone must be a number" })
+    // .regex(/^\d+$/, { message: "Phone must be a number" })
     .optional(),
   aadhar_no: z
     .string({

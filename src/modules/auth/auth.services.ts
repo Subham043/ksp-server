@@ -23,6 +23,9 @@ export async function signin(user: LoginBody): Promise<AuthType> {
   if (!userByEmail) {
     throw new InvalidRequestError("Invalid credentials");
   }
+  if (userByEmail.status === "blocked") {
+    throw new InvalidRequestError("Your account has been blocked");
+  }
   const isPasswordValid = await app.bcrypt.compare(
     password,
     userByEmail.password

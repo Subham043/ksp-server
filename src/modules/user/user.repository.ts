@@ -2,6 +2,7 @@ import prisma from "../../db";
 import { UserCreateType, UserType } from "../../@types/user.type";
 import { UpdateUserBody } from "./schemas/update.schema";
 import { UserColumn } from "./user.model";
+import { UpdateUserPasswordBody } from "./schemas/passwordUpdate.schema";
 
 /**
  * Create a new user with the provided data.
@@ -25,6 +26,23 @@ export async function createUser(data: UserCreateType): Promise<UserType> {
  */
 export async function updateUser(
   data: Omit<UpdateUserBody, "confirm_password">,
+  id: number
+): Promise<UserType> {
+  return await prisma.user.update({
+    where: { id },
+    data: data,
+  });
+}
+
+/**
+ * Update user information in the database.
+ *
+ * @param {UpdateUserBody} data - the data to update the user with
+ * @param {number} id - the id of the user to update
+ * @return {Promise<UserType>} the updated user information
+ */
+export async function updateUserPassword(
+  data: Omit<UpdateUserPasswordBody, "confirm_password">,
   id: number
 ): Promise<UserType> {
   return await prisma.user.update({

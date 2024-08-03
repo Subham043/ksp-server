@@ -7,6 +7,7 @@ import {
   importExcel,
   list,
   update,
+  updatePassword,
 } from "./user.services";
 import {
   CreateUserBody,
@@ -20,6 +21,7 @@ import { GetIdParam } from "../../common/schemas/id_param.schema";
 import { GetPaginationQuery } from "../../common/schemas/pagination_query.schema";
 import { GetSearchQuery } from "../../common/schemas/search_query.schema";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
+import { UpdateUserPasswordBody } from "./schemas/passwordUpdate.schema";
 
 export async function listUsers(
   request: FastifyRequest<{
@@ -127,6 +129,22 @@ export async function updateUser(
     email: request.body.email,
   });
   const result = await update(request.body, request.params);
+  return reply.code(200).type("application/json").send({
+    code: 200,
+    success: true,
+    message: "User Updated",
+    data: result,
+  });
+}
+
+export async function updateUserPwd(
+  request: FastifyRequest<{
+    Body: UpdateUserPasswordBody;
+    Params: GetIdParam;
+  }>,
+  reply: FastifyReply
+): Promise<void> {
+  const result = await updatePassword(request.body, request.params);
   return reply.code(200).type("application/json").send({
     code: 200,
     success: true,

@@ -22,6 +22,11 @@ export const updateUserBodySchema = z.object({
       message: "Role must be one of [user, admin]",
     }),
   }),
+  status: z.enum(["active", "blocked"], {
+    errorMap: () => ({
+      message: "Role must be one of [active, blocked]",
+    }),
+  }),
 });
 
 export const updateUserUniqueEmailSchema = z

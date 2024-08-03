@@ -24,6 +24,7 @@ import env from "../config/env";
 import {
   PreHandlerHookDecoratorType,
   ServerErrorHandler,
+  verifyAdminDecorator,
   verifyJwtDecorator,
 } from "./decorator";
 import { AuthType } from "../@types/user.type";
@@ -40,12 +41,14 @@ import { dashboardRoutes } from "../modules/dashboard/dashboard.routes";
 import { visitorRoutes } from "../modules/visitor/visitor.routes";
 import { hearingRoutes } from "../modules/hearing/hearing.routes";
 import { crimesByCriminalsRoutes } from "../modules/crimesByCriminals/crimesByCriminals.routes";
+import { installationRoutes } from "../modules/installation/installation.routes";
 
 declare module "fastify" {
   interface FastifyInstance {
     // mailer: FastifyMailType;
     mailer: FastifyMailer;
     verifyJwt: PreHandlerHookDecoratorType;
+    verifyAdmin: PreHandlerHookDecoratorType;
   }
   interface FastifyRequest {
     authenticatedUser: AuthType | undefined;
@@ -87,6 +90,11 @@ export async function buildServer() {
       "verifyJwt",
       (request: FastifyRequest, reply: FastifyReply, done) =>
         verifyJwtDecorator(request, reply, done)
+    )
+    .decorate(
+      "verifyAdmin",
+      (request: FastifyRequest, reply: FastifyReply, done) =>
+        verifyAdminDecorator(request, reply, done)
     )
     .register(auth);
 
@@ -132,6 +140,7 @@ export async function buildServer() {
   await server.register(uploadRoutes, { prefix: "/api/upload" });
   await server.register(pdfRoutes, { prefix: "/api/pdf" });
   await server.register(dashboardRoutes, { prefix: "/api/dashboard" });
+  await server.register(installationRoutes, { prefix: "/api/installations" });
 
   // delay is the number of milliseconds for the graceful close to finish
   const closeListeners = closeWithGrace(

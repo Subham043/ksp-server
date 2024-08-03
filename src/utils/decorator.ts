@@ -96,3 +96,51 @@ export const verifyJwtDecorator = async (
     throw new UnauthorizedError();
   }
 };
+
+export const verifyAdminDecorator = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: (err?: FastifyError) => void
+) => {
+  try {
+    const customRequestQuery = request.query as { token?: string };
+    const authQuery = customRequestQuery.token ?? undefined;
+    const authHeader = request.headers.authorization ?? undefined;
+    const authCookie = request.cookies[env.APP_NAME + "_Auth"] ?? undefined;
+    if (authHeader || authQuery || authCookie) {
+      const token =
+        authCookie ||
+        authQuery ||
+        (authHeader ? authHeader.replace("Bearer ", "") : "");
+      const user = request.server.jwt.verify<AuthType>(token);
+      if (user) {
+        const verifyUser = await getById(user.id);
+        if (
+          verifyUser &&
+          verifyUser.status === "active" &&
+          verifyUser.role === "admin"
+        ) {
+          const getTokenData = await getToken({ token, userId: user.id });
+          if (getTokenData.length > 0) {
+            request.user = { ...user, ...verifyUser };
+            request.authenticatedUser = {
+              ...user,
+              ...verifyUser,
+              access_token: token,
+            };
+            return;
+          }
+          // done(); // pass an error if the authentication fails
+        }
+        await deleteToken({ token, userId: user.id });
+        throw new UnauthorizedError();
+      } else {
+        throw new UnauthorizedError();
+      }
+    } else {
+      throw new UnauthorizedError();
+    }
+  } catch (err) {
+    throw new UnauthorizedError();
+  }
+};

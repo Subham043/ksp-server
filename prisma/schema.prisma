@@ -242,3 +242,10 @@ model JailVisitorDetail {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
 }
+
+model Installation {
+  id        Int      @id @default(autoincrement())
+  IPv4      String   @unique @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}

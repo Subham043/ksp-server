@@ -6,6 +6,7 @@ import {
   paginate,
   remove,
   updateUser,
+  updateUserPassword,
 } from "./user.repository";
 import { v4 as uuidv4 } from "uuid";
 import { NotFoundError } from "../../utils/exceptions";
@@ -36,6 +37,7 @@ import {
   UserExcelData,
 } from "./user.model";
 import { PostExcelBody } from "../../common/schemas/excel.schema";
+import { UpdateUserPasswordBody } from "./schemas/passwordUpdate.schema";
 
 /**
  * Create a new user with the provided user information.
@@ -93,14 +95,29 @@ export async function update(
   user: UpdateUserBody,
   param: GetIdParam
 ): Promise<UserType> {
-  const { name, email, role } = user;
+  const { name, email, role, status } = user;
   const data = {
     name,
     email,
     role,
+    status,
   };
 
   return await updateUser(data, param.id);
+}
+
+export async function updatePassword(
+  user: UpdateUserPasswordBody,
+  param: GetIdParam
+): Promise<UserType> {
+  const app = await fastifyApp;
+  const { password } = user;
+  const hashedPassword = await app.bcrypt.hash(password);
+  const data = {
+    password: hashedPassword,
+  };
+
+  return await updateUserPassword(data, param.id);
 }
 
 /**
